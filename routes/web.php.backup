@@ -1,0 +1,74 @@
+﻿<?php
+
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\CalculatorController;
+use App\Http\Controllers\FAQController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\UserDashboardController;
+
+// Import Admin FeedbackController with alias
+use App\Http\Controllers\Admin\FeedbackController as AdminFeedbackController;
+// Import regular FeedbackController
+use App\Http\Controllers\FeedbackController;
+
+use Illuminate\Support\Facades\Route;
+
+// ===== PUBLIC ROUTES (No Login Required) =====
+Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/about', [HomeController::class, 'about'])->name('about');
+Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
+Route::post('/share/whatsapp', [HomeController::class, 'shareWhatsApp'])->name('share.whatsapp');
+
+// Public Feedback & FAQ
+Route::get('/feedback', [FeedbackController::class, 'index'])->name('feedback.index');
+Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
+Route::get('/faq', [FAQController::class, 'index'])->name('faq.index');
+
+// ===== AUTHENTICATED USER ROUTES (Require Login) =====
+Route::middleware(['auth', 'user'])->group(function () {
+    // User Dashboard - FIXED ROUTE
+    Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('dashboard');
+    
+    // Calculator Routes
+    Route::get('/calculator', [CalculatorController::class, 'index'])->name('calculator.index');
+    Route::post('/calculator', [CalculatorController::class, 'store'])->name('calculator.store');
+    Route::get('/calculator/result/{id}', [CalculatorController::class, 'result'])->name('calculator.result');
+    Route::get('/calculator/pdf/{id}', [CalculatorController::class, 'generatePDF'])->name('calculator.pdf');
+    
+    // Profile Routes
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+// ===== ADMIN ROUTES (Require Admin Role) =====
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    // Dashboard
+    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+    
+    // User Management
+    Route::get('/users', [AdminController::class, 'users'])->name('users');
+    Route::get('/users/create', [AdminController::class, 'createUser'])->name('users.create');
+    Route::post('/users', [AdminController::class, 'storeUser'])->name('users.store');
+    Route::get('/users/{user}/edit', [AdminController::class, 'editUser'])->name('users.edit');
+    Route::put('/users/{user}', [AdminController::class, 'updateUser'])->name('users.update');
+    Route::delete('/users/{user}', [AdminController::class, 'deleteUser'])->name('users.delete');
+    
+    // Feedback Management - Use AdminFeedbackController
+    Route::get('/feedback', [AdminFeedbackController::class, 'index'])->name('feedback');
+    Route::get('/feedback/{feedback}', [AdminFeedbackController::class, 'show'])->name('feedback.show');
+    Route::patch('/feedback/{feedback}/status', [AdminFeedbackController::class, 'updateStatus'])->name('feedback.update-status');
+    Route::delete('/feedback/{feedback}', [AdminFeedbackController::class, 'destroy'])->name('feedback.destroy');
+    Route::post('/feedback/bulk-action', [AdminFeedbackController::class, 'bulkAction'])->name('feedback.bulk-action');
+    Route::get('/feedback/export', [AdminFeedbackController::class, 'export'])->name('feedback.export');
+
+    // Estate Management
+    Route::get('/estates', [AdminController::class, 'allEstates'])->name('estates');
+    
+    // Other admin routes...
+});
+
+// ===== AUTH ROUTES =====
+require __DIR__.'/auth.php';

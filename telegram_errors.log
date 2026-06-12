@@ -1,0 +1,4 @@
+[03-Apr-2026 15:09:01 Asia/Kuala_Lumpur] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\laragon\www\neo-faraid\complete-bot.php:1) in C:\laragon\www\neo-faraid\complete-bot.php on line 27
+[03-Apr-2026 15:09:01 Asia/Kuala_Lumpur] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\laragon\www\neo-faraid\complete-bot.php:1) in C:\laragon\www\neo-faraid\complete-bot.php on line 28
+[07-Apr-2026 14:32:42 Asia/Kuala_Lumpur] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\laragon\www\neo-faraid\complete-bot.php:1) in C:\laragon\www\neo-faraid\complete-bot.php on line 27
+[07-Apr-2026 14:32:42 Asia/Kuala_Lumpur] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\laragon\www\neo-faraid\complete-bot.php:1) in C:\laragon\www\neo-faraid\complete-bot.php on line 28
