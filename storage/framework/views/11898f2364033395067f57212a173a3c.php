@@ -1120,7 +1120,7 @@
     <!-- Enhanced Top Navigation -->
     <nav class="admin-top-nav" role="navigation" aria-label="Admin navigation">
         <div class="nav-left">
-            <a href="{{ route('admin.dashboard') }}" class="admin-logo" aria-label="Neo Faraid Admin Home">
+            <a href="<?php echo e(route('admin.dashboard')); ?>" class="admin-logo" aria-label="Neo Faraid Admin Home">
                 <i class="fas fa-layer-group" style="color: var(--accent-color); font-size: 1.5rem; filter: drop-shadow(0 2px 4px rgba(255,215,0,0.3)); animation: logoFloat 4s ease-in-out infinite;"></i>
                 <span class="admin-logo-text">Neo Faraid Admin</span>
             </a>
@@ -1128,13 +1128,13 @@
 
         <!-- User Profile Section -->
         <div class="nav-right">
-            @php
+            <?php
             $authUser = auth()->user();
             $lastLogin = $authUser->last_login_at ? \Carbon\Carbon::parse($authUser->last_login_at)->diffForHumans() : 'Recently';
             $fullInitials = strtoupper(implode('', array_map(function($name) {
                 return substr($name, 0, 1);
             }, explode(' ', $authUser->name, 2))));
-            @endphp
+            ?>
 
             <div class="user-profile-container" id="user-profile-container">
                 <!-- User Profile Button -->
@@ -1143,17 +1143,17 @@
                     aria-label="User profile menu"
                     aria-expanded="false"
                     aria-haspopup="true"
-                    data-user-role="{{ $authUser->role }}"
-                    data-user-initials="{{ $fullInitials }}">
+                    data-user-role="<?php echo e($authUser->role); ?>"
+                    data-user-initials="<?php echo e($fullInitials); ?>">
                     <div class="user-avatar" aria-hidden="true">
-                        <span class="avatar-initials">{{ $fullInitials }}</span>
-                        @if($authUser->role === 'admin')
+                        <span class="avatar-initials"><?php echo e($fullInitials); ?></span>
+                        <?php if($authUser->role === 'admin'): ?>
                         <span class="admin-badge" aria-label="Administrator">A</span>
-                        @endif
+                        <?php endif; ?>
                     </div>
                     <div class="user-profile-info">
-                        <span class="user-name">{{ $authUser->name }}</span>
-                        <span class="user-role">{{ ucfirst($authUser->role) }}</span>
+                        <span class="user-name"><?php echo e($authUser->name); ?></span>
+                        <span class="user-role"><?php echo e(ucfirst($authUser->role)); ?></span>
                     </div>
                     <svg class="chevron-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
@@ -1169,24 +1169,25 @@
                     <!-- Profile Header -->
                     <div class="profile-header">
                         <div class="profile-avatar-large" aria-hidden="true">
-                            <span class="avatar-initials-large">{{ $fullInitials }}</span>
-                            @if($authUser->role === 'admin')
+                            <span class="avatar-initials-large"><?php echo e($fullInitials); ?></span>
+                            <?php if($authUser->role === 'admin'): ?>
                             <div class="admin-badge-large" aria-label="Administrator">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
                                 </svg>
                             </div>
-                            @endif
+                            <?php endif; ?>
                         </div>
                         <div class="profile-info">
-                            <h3 class="profile-name">{{ $authUser->name }}</h3>
-                            <p class="profile-email">{{ $authUser->email }}</p>
+                            <h3 class="profile-name"><?php echo e($authUser->name); ?></h3>
+                            <p class="profile-email"><?php echo e($authUser->email); ?></p>
                             <div class="profile-meta">
                                 <span class="last-login">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                     </svg>
-                                    Last login: {{ $lastLogin }}
+                                    Last login: <?php echo e($lastLogin); ?>
+
                                 </span>
                                 <span class="user-status active">● Online</span>
                             </div>
@@ -1197,27 +1198,27 @@
                     <div class="dropdown-section">
                         <h4 class="section-title">Navigation</h4>
                         <nav class="dropdown-nav" role="navigation" aria-label="Admin navigation">
-                            <a href="{{ route('admin.users.index') }}" class="dropdown-nav-item {{ request()->is('admin/users*') ? 'active' : '' }}">
+                            <a href="<?php echo e(route('admin.users.index')); ?>" class="dropdown-nav-item <?php echo e(request()->is('admin/users*') ? 'active' : ''); ?>">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197"/></svg>
                                 <span>Manage Users</span>
                             </a>
-                            <a href="{{ route('admin.feedback.index') }}" class="dropdown-nav-item {{ request()->is('admin/feedback*') ? 'active' : '' }}">
+                            <a href="<?php echo e(route('admin.feedback.index')); ?>" class="dropdown-nav-item <?php echo e(request()->is('admin/feedback*') ? 'active' : ''); ?>">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/></svg>
                                 <span>Manage Feedback</span>
                             </a>
-                            <a href="{{ route('admin.faq.index') }}" class="dropdown-nav-item {{ request()->is('admin/faq*') ? 'active' : '' }}">
+                            <a href="<?php echo e(route('admin.faq.index')); ?>" class="dropdown-nav-item <?php echo e(request()->is('admin/faq*') ? 'active' : ''); ?>">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                 <span>Manage FAQ</span>
                             </a>
-                            <a href="{{ route('admin.calculations.index') }}" class="dropdown-nav-item {{ request()->is('admin/calculations*') ? 'active' : '' }}">
+                            <a href="<?php echo e(route('admin.calculations.index')); ?>" class="dropdown-nav-item <?php echo e(request()->is('admin/calculations*') ? 'active' : ''); ?>">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
                                 <span>Manage Calculations</span>
                             </a>
-                            <a href="{{ route('admin.instant-estate.index') }}" class="dropdown-nav-item">
+                            <a href="<?php echo e(route('admin.instant-estate.index')); ?>" class="dropdown-nav-item">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                                 <span>Manage Instant Estate</span>
                             </a>
-                            <a href="{{ route('admin.estate-setup.index') }}" class="dropdown-nav-item {{ request()->is('admin/estate-setup*') ? 'active' : '' }}">
+                            <a href="<?php echo e(route('admin.estate-setup.index')); ?>" class="dropdown-nav-item <?php echo e(request()->is('admin/estate-setup*') ? 'active' : ''); ?>">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
                                 <span>Manage Estate Planning</span>
                             </a>
@@ -1228,8 +1229,8 @@
                     <div class="dropdown-section">
                         <h4 class="section-title">Account</h4>
                         <div class="account-links">
-                            <a href="{{ route('profile.edit') }}"
-                                class="account-link {{ request()->is('profile*') ? 'active' : '' }}"
+                            <a href="<?php echo e(route('profile.edit')); ?>"
+                                class="account-link <?php echo e(request()->is('profile*') ? 'active' : ''); ?>"
                                 role="menuitem">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
@@ -1242,8 +1243,8 @@
 
                     <!-- Footer with Logout -->
                     <div class="dropdown-footer">
-                        <form method="POST" action="{{ route('logout') }}" class="logout-form">
-                            @csrf
+                        <form method="POST" action="<?php echo e(route('logout')); ?>" class="logout-form">
+                            <?php echo csrf_field(); ?>
                             <button type="submit" class="logout-btn" role="menuitem" aria-label="Log out from admin panel">
                                 <span>Logout</span>
                             </button>
@@ -1267,40 +1268,43 @@
                     <svg class="pill-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                     </svg>
-                    Editing: {{ $user->name }}
+                    Editing: <?php echo e($user->name); ?>
+
                 </span>
                 <span class="badge-pill">
                     <svg class="pill-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                     </svg>
-                    User #{{ $user->id }}
+                    User #<?php echo e($user->id); ?>
+
                 </span>
             </div>
         </header>
 
         <!-- Alert Messages -->
-        @if(session('success'))
+        <?php if(session('success')): ?>
         <div class="alert-message alert-success" role="alert">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
-            {{ session('success') }}
-        </div>
-        @endif
+            <?php echo e(session('success')); ?>
 
-        @if($errors->any())
+        </div>
+        <?php endif; ?>
+
+        <?php if($errors->any()): ?>
         <div class="alert-message alert-error" role="alert">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
             <ul>
-                @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-                @endforeach
+                <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <li><?php echo e($error); ?></li>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </ul>
         </div>
-        @endif
+        <?php endif; ?>
 
         <!-- Form Container -->
         <div class="form-container">
@@ -1322,41 +1326,71 @@
                         <span>All fields are editable. Please ensure the information is accurate before saving.</span>
                     </div>
 
-                    <form method="POST" action="{{ route('admin.users.update', $user->id) }}" id="edit-user-form">
-                        @csrf
-                        @method('PUT')
+                    <form method="POST" action="<?php echo e(route('admin.users.update', $user->id)); ?>" id="edit-user-form">
+                        <?php echo csrf_field(); ?>
+                        <?php echo method_field('PUT'); ?>
 
                         <div class="grid-2">
                             <div class="form-group">
                                 <label for="name" class="form-label">Full Name <span class="required">*</span></label>
                                 <input type="text" id="name" name="name"
-                                    class="form-input @error('name') is-invalid @enderror"
-                                    value="{{ old('name', $user->name) }}"
+                                    class="form-input <?php $__errorArgs = ['name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
+                                    value="<?php echo e(old('name', $user->name)); ?>"
                                     placeholder="Enter full name" required>
-                                @error('name')
+                                <?php $__errorArgs = ['name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
                                 <div class="error-message">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                     </svg>
-                                    {{ $message }}
+                                    <?php echo e($message); ?>
+
                                 </div>
-                                @enderror
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
 
                             <div class="form-group">
                                 <label for="nric" class="form-label">NRIC/Passport Number <span class="required">*</span></label>
                                 <input type="text" id="nric" name="nric"
-                                    class="form-input @error('nric') is-invalid @enderror"
-                                    value="{{ old('nric', $user->nric ?? '') }}"
+                                    class="form-input <?php $__errorArgs = ['nric'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
+                                    value="<?php echo e(old('nric', $user->nric ?? '')); ?>"
                                     placeholder="Enter NRIC or Passport" required>
-                                @error('nric')
+                                <?php $__errorArgs = ['nric'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
                                 <div class="error-message">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                     </svg>
-                                    {{ $message }}
+                                    <?php echo e($message); ?>
+
                                 </div>
-                                @enderror
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
 
@@ -1364,16 +1398,31 @@
                             <div class="form-group">
                                 <label for="dob" class="form-label">Date of Birth <span class="required">*</span></label>
                                 <input type="date" id="dob" name="date_of_birth"
-                                    class="form-input @error('date_of_birth') is-invalid @enderror"
-                                    value="{{ old('date_of_birth', $user->date_of_birth ? $user->date_of_birth->format('Y-m-d') : '') }}" required>
-                                @error('date_of_birth')
+                                    class="form-input <?php $__errorArgs = ['date_of_birth'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
+                                    value="<?php echo e(old('date_of_birth', $user->date_of_birth ? $user->date_of_birth->format('Y-m-d') : '')); ?>" required>
+                                <?php $__errorArgs = ['date_of_birth'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
                                 <div class="error-message">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                     </svg>
-                                    {{ $message }}
+                                    <?php echo e($message); ?>
+
                                 </div>
-                                @enderror
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
 
                             <div class="form-group">
@@ -1382,73 +1431,126 @@
                                     <div class="form-radio">
                                         <input type="radio" id="gender_male" name="gender" value="male"
                                             class="form-radio-input"
-                                            {{ old('gender', $user->gender) == 'male' ? 'checked' : '' }}>
+                                            <?php echo e(old('gender', $user->gender) == 'male' ? 'checked' : ''); ?>>
                                         <label for="gender_male" class="form-radio-label">Male</label>
                                     </div>
                                     <div class="form-radio">
                                         <input type="radio" id="gender_female" name="gender" value="female"
                                             class="form-radio-input"
-                                            {{ old('gender', $user->gender) == 'female' ? 'checked' : '' }}>
+                                            <?php echo e(old('gender', $user->gender) == 'female' ? 'checked' : ''); ?>>
                                         <label for="gender_female" class="form-radio-label">Female</label>
                                     </div>
                                 </div>
-                                @error('gender')
+                                <?php $__errorArgs = ['gender'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
                                 <div class="error-message">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                     </svg>
-                                    {{ $message }}
+                                    <?php echo e($message); ?>
+
                                 </div>
-                                @enderror
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
 
                         <div class="form-group">
                             <label for="email" class="form-label">Email Address <span class="required">*</span></label>
                             <input type="email" id="email" name="email"
-                                class="form-input @error('email') is-invalid @enderror"
-                                value="{{ old('email', $user->email) }}"
+                                class="form-input <?php $__errorArgs = ['email'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
+                                value="<?php echo e(old('email', $user->email)); ?>"
                                 placeholder="Enter email address" required>
-                            @error('email')
+                            <?php $__errorArgs = ['email'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
                             <div class="error-message">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                 </svg>
-                                {{ $message }}
+                                <?php echo e($message); ?>
+
                             </div>
-                            @enderror
+                            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                         </div>
 
                         <!-- Updated Phone Field with new format hint -->
                         <div class="form-group">
                             <label for="contact_phone" class="form-label">Contact Phone <span class="required">*</span></label>
                             <input type="tel" name="contact_phone" id="contact_phone"
-                                class="form-input @error('contact_phone') is-invalid @enderror"
-                                value="{{ old('contact_phone', $user->contact_phone) }}"
+                                class="form-input <?php $__errorArgs = ['contact_phone'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
+                                value="<?php echo e(old('contact_phone', $user->contact_phone)); ?>"
                                 required placeholder="01X-XXXXXXX">
-                            @error('contact_phone')
+                            <?php $__errorArgs = ['contact_phone'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
                             <div class="error-message">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                 </svg>
-                                {{ $message }}
+                                <?php echo e($message); ?>
+
                             </div>
-                            @enderror
+                            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                         </div>
 
                         <div class="form-group">
                             <label for="address" class="form-label">Residential Address <span class="required">*</span></label>
                             <textarea name="address" id="address" rows="3"
-                                class="form-input @error('address') is-invalid @enderror"
-                                required placeholder="Enter full residential address">{{ old('address', $user->address) }}</textarea>
-                            @error('address')
+                                class="form-input <?php $__errorArgs = ['address'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
+                                required placeholder="Enter full residential address"><?php echo e(old('address', $user->address)); ?></textarea>
+                            <?php $__errorArgs = ['address'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
                             <div class="error-message">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                 </svg>
-                                {{ $message }}
+                                <?php echo e($message); ?>
+
                             </div>
-                            @enderror
+                            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                         </div>
 
                         <hr class="form-divider">
@@ -1468,24 +1570,32 @@
                                     <div class="form-radio">
                                         <input type="radio" id="role_user" name="role" value="user"
                                             class="form-radio-input"
-                                            {{ old('role', $user->role) == 'user' ? 'checked' : '' }}>
+                                            <?php echo e(old('role', $user->role) == 'user' ? 'checked' : ''); ?>>
                                         <label for="role_user" class="form-radio-label">User</label>
                                     </div>
                                     <div class="form-radio">
                                         <input type="radio" id="role_admin" name="role" value="admin"
                                             class="form-radio-input"
-                                            {{ old('role', $user->role) == 'admin' ? 'checked' : '' }}>
+                                            <?php echo e(old('role', $user->role) == 'admin' ? 'checked' : ''); ?>>
                                         <label for="role_admin" class="form-radio-label">Admin</label>
                                     </div>
                                 </div>
-                                @error('role')
+                                <?php $__errorArgs = ['role'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
                                 <div class="error-message">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                     </svg>
-                                    {{ $message }}
+                                    <?php echo e($message); ?>
+
                                 </div>
-                                @enderror
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
 
                             <div class="form-group">
@@ -1494,24 +1604,32 @@
                                     <div class="form-radio">
                                         <input type="radio" id="status_active" name="status" value="active"
                                             class="form-radio-input"
-                                            {{ old('status', $user->status) == 'active' ? 'checked' : '' }}>
+                                            <?php echo e(old('status', $user->status) == 'active' ? 'checked' : ''); ?>>
                                         <label for="status_active" class="form-radio-label">Active</label>
                                     </div>
                                     <div class="form-radio">
                                         <input type="radio" id="status_inactive" name="status" value="inactive"
                                             class="form-radio-input"
-                                            {{ old('status', $user->status) == 'inactive' ? 'checked' : '' }}>
+                                            <?php echo e(old('status', $user->status) == 'inactive' ? 'checked' : ''); ?>>
                                         <label for="status_inactive" class="form-radio-label">Inactive</label>
                                     </div>
                                 </div>
-                                @error('status')
+                                <?php $__errorArgs = ['status'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
                                 <div class="error-message">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                     </svg>
-                                    {{ $message }}
+                                    <?php echo e($message); ?>
+
                                 </div>
-                                @enderror
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
 
@@ -1520,7 +1638,7 @@
                                 <span>Update User</span>
                                 <div class="btn-hover-effect"></div>
                             </button>
-                            <a href="{{ route('admin.users.index') }}" class="btn btn-secondary">
+                            <a href="<?php echo e(route('admin.users.index')); ?>" class="btn btn-secondary">
                                 Cancel
                             </a>
                         </div>
@@ -1751,4 +1869,4 @@
         });
     </script>
 </body>
-</html>
+</html><?php /**PATH C:\laragon\www\neo-faraid\resources\views/admin/users/edit.blade.php ENDPATH**/ ?>

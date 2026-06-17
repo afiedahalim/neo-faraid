@@ -700,19 +700,21 @@ Route::middleware(['auth', 'admin', 'verified'])->prefix('admin')->name('admin.'
     // Real-time stats
     Route::get('/realtime-stats', [AdminController::class, 'getRealtimeStats'])->name('realtime-stats');
 
-    // User Management
-    Route::prefix('users')->name('users.')->controller(AdminController::class)->group(function () {
-        Route::get('/', 'userIndex')->name('index');
-        Route::get('/create', 'userCreate')->name('create');
-        Route::post('/', 'userStore')->name('store');
-        Route::get('/{user}', 'userShow')->name('show');
-        Route::get('/{user}/edit', 'userEdit')->name('edit');
-        Route::put('/{user}', 'userUpdate')->name('update');
-        Route::patch('/{user}', 'userUpdate');
-        Route::delete('/{user}', 'userDestroy')->name('destroy');
-        Route::post('/{user}/toggle-status', 'userToggleStatus')->name('toggle-status');
-        Route::post('/{user}/reset-password', 'userResetPassword')->name('reset-password');
-        Route::get('/export', 'userExport')->name('export');
+    // ================================================================
+    // USER MANAGEMENT – now using dedicated UserController
+    // ================================================================
+    Route::prefix('users')->name('users.')->controller(\App\Http\Controllers\Admin\UserController::class)->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('/create', 'create')->name('create');
+        Route::post('/', 'store')->name('store');
+        Route::get('/{user}', 'show')->name('show');
+        Route::get('/{user}/edit', 'edit')->name('edit');
+        Route::put('/{user}', 'update')->name('update');
+        Route::patch('/{user}', 'update');
+        Route::delete('/{user}', 'destroy')->name('destroy');
+        Route::post('/{user}/toggle-status', 'toggleStatus')->name('toggle-status');
+        Route::post('/{user}/reset-password', 'resetPassword')->name('reset-password');
+        Route::get('/export', 'export')->name('export');
     });
 
     // Feedback Management

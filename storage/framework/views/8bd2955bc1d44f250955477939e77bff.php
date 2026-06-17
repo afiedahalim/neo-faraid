@@ -1683,7 +1683,7 @@
     <!-- Enhanced Top Navigation -->
     <nav class="admin-top-nav" role="navigation" aria-label="Admin navigation">
         <div class="nav-left">
-            <a href="{{ route('admin.dashboard') }}" class="admin-logo" aria-label="Neo Faraid Admin Home">
+            <a href="<?php echo e(route('admin.dashboard')); ?>" class="admin-logo" aria-label="Neo Faraid Admin Home">
                 <i class="fas fa-layer-group" style="color: var(--accent-color); font-size: 1.5rem; filter: drop-shadow(0 2px 4px rgba(255,215,0,0.3)); animation: logoFloat 4s ease-in-out infinite;"></i>
                 <span class="admin-logo-text">Neo Faraid Admin</span>
             </a>
@@ -1691,13 +1691,13 @@
 
         <!-- User Profile Section -->
         <div class="nav-right">
-            @php
+            <?php
                 $authUser = auth()->user();
                 $lastLogin = $authUser->last_login_at ? \Carbon\Carbon::parse($authUser->last_login_at)->diffForHumans() : 'Recently';
                 $fullInitials = strtoupper(implode('', array_map(function($name) {
                     return substr($name, 0, 1);
                 }, explode(' ', $authUser->name, 2))));
-            @endphp
+            ?>
 
             <div class="user-profile-container" id="user-profile-container">
                 <button class="user-profile-btn"
@@ -1705,17 +1705,17 @@
                     aria-label="User profile menu"
                     aria-expanded="false"
                     aria-haspopup="true"
-                    data-user-role="{{ $authUser->role }}"
-                    data-user-initials="{{ $fullInitials }}">
+                    data-user-role="<?php echo e($authUser->role); ?>"
+                    data-user-initials="<?php echo e($fullInitials); ?>">
                     <div class="user-avatar" aria-hidden="true">
-                        <span class="avatar-initials">{{ $fullInitials }}</span>
-                        @if($authUser->role === 'admin')
+                        <span class="avatar-initials"><?php echo e($fullInitials); ?></span>
+                        <?php if($authUser->role === 'admin'): ?>
                             <span class="admin-badge" aria-label="Administrator">A</span>
-                        @endif
+                        <?php endif; ?>
                     </div>
                     <div class="user-profile-info">
-                        <span class="user-name">{{ $authUser->name }}</span>
-                        <span class="user-role">{{ ucfirst($authUser->role) }}</span>
+                        <span class="user-name"><?php echo e($authUser->name); ?></span>
+                        <span class="user-role"><?php echo e(ucfirst($authUser->role)); ?></span>
                     </div>
                     <svg class="chevron-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
@@ -1730,24 +1730,25 @@
                     aria-hidden="true">
                     <div class="profile-header">
                         <div class="profile-avatar-large" aria-hidden="true">
-                            <span class="avatar-initials-large">{{ $fullInitials }}</span>
-                            @if($authUser->role === 'admin')
+                            <span class="avatar-initials-large"><?php echo e($fullInitials); ?></span>
+                            <?php if($authUser->role === 'admin'): ?>
                                 <div class="admin-badge-large" aria-label="Administrator">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
                                     </svg>
                                 </div>
-                            @endif
+                            <?php endif; ?>
                         </div>
                         <div class="profile-info">
-                            <h3 class="profile-name">{{ $authUser->name }}</h3>
-                            <p class="profile-email">{{ $authUser->email }}</p>
+                            <h3 class="profile-name"><?php echo e($authUser->name); ?></h3>
+                            <p class="profile-email"><?php echo e($authUser->email); ?></p>
                             <div class="profile-meta">
                                 <span class="last-login">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                     </svg>
-                                    Last login: {{ $lastLogin }}
+                                    Last login: <?php echo e($lastLogin); ?>
+
                                 </span>
                                 <span class="user-status active">● Online</span>
                             </div>
@@ -1757,27 +1758,27 @@
                     <div class="dropdown-section">
                         <h4 class="section-title">Navigation</h4>
                         <nav class="dropdown-nav" role="navigation" aria-label="Admin navigation">
-                            <a href="{{ route('admin.users.index') }}" class="dropdown-nav-item active">
+                            <a href="<?php echo e(route('admin.users.index')); ?>" class="dropdown-nav-item active">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197"/></svg>
                                 <span>Manage Users</span>
                             </a>
-                            <a href="{{ route('admin.feedback.index') }}" class="dropdown-nav-item">
+                            <a href="<?php echo e(route('admin.feedback.index')); ?>" class="dropdown-nav-item">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/></svg>
                                 <span>Manage Feedback</span>
                             </a>
-                            <a href="{{ route('admin.faq.index') }}" class="dropdown-nav-item">
+                            <a href="<?php echo e(route('admin.faq.index')); ?>" class="dropdown-nav-item">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                 <span>Manage FAQ</span>
                             </a>
-                            <a href="{{ route('admin.calculations.index') }}" class="dropdown-nav-item">
+                            <a href="<?php echo e(route('admin.calculations.index')); ?>" class="dropdown-nav-item">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
                                 <span>Manage Calculations</span>
                             </a>
-                            <a href="{{ route('admin.instant-estate.index') }}" class="dropdown-nav-item">
+                            <a href="<?php echo e(route('admin.instant-estate.index')); ?>" class="dropdown-nav-item">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                                 <span>Manage Instant Estate</span>
                             </a>
-                            <a href="{{ route('admin.estate-setup.index') }}" class="dropdown-nav-item">
+                            <a href="<?php echo e(route('admin.estate-setup.index')); ?>" class="dropdown-nav-item">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
                                 <span>Manage Estate Planning</span>
                             </a>
@@ -1787,7 +1788,7 @@
                     <div class="dropdown-section">
                         <h4 class="section-title">Account</h4>
                         <div class="account-links">
-                            <a href="{{ route('profile.edit') }}"
+                            <a href="<?php echo e(route('profile.edit')); ?>"
                                 class="account-link"
                                 role="menuitem">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1800,8 +1801,8 @@
                     </div>
 
                     <div class="dropdown-footer">
-                        <form method="POST" action="{{ route('logout') }}" class="logout-form">
-                            @csrf
+                        <form method="POST" action="<?php echo e(route('logout')); ?>" class="logout-form">
+                            <?php echo csrf_field(); ?>
                             <button type="submit" class="logout-btn" role="menuitem" aria-label="Log out from admin panel">
                                 <span>Logout</span>
                             </button>
@@ -1822,23 +1823,25 @@
         </header>
 
         <!-- Alert Messages -->
-        @if(session('success'))
+        <?php if(session('success')): ?>
             <div class="alert-message alert-success" role="alert">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
-                {{ session('success') }}
-            </div>
-        @endif
+                <?php echo e(session('success')); ?>
 
-        @if(session('error'))
+            </div>
+        <?php endif; ?>
+
+        <?php if(session('error')): ?>
             <div class="alert-message alert-error" role="alert">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
-                {{ session('error') }}
+                <?php echo e(session('error')); ?>
+
             </div>
-        @endif
+        <?php endif; ?>
 
         <!-- Search -->
         <div class="search-container">
@@ -1849,13 +1852,13 @@
                 <input type="text"
                     placeholder="Search users by name, email, or role..."
                     id="search-input"
-                    value="{{ request('search') }}">
+                    value="<?php echo e(request('search')); ?>">
             </div>
         </div>
 
         <!-- Table -->
         <div class="table-container">
-            @if($users->count() > 0)
+            <?php if($users->count() > 0): ?>
                 <table>
                     <thead>
                         <tr>
@@ -1868,8 +1871,8 @@
                         </tr>
                     </thead>
                     <tbody id="user-table-body">
-                        @foreach($users as $user)
-                            @php
+                        <?php $__currentLoopData = $users; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $user): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <?php
                                 // Use the same status logic as in edit.blade.php (active/inactive)
                                 $status = $user->status ?? 'inactive'; // fallback to 'inactive' if not set
                                 // Ensure status is one of the two values shown in edit form
@@ -1884,53 +1887,57 @@
                                 $gender = $user->gender == 'male' ? 'Male' : ($user->gender == 'female' ? 'Female' : 'N/A');
                                 $phone = $user->contact_phone ?? 'N/A';
                                 $address = $user->address ?? 'N/A';
-                            @endphp
-                            <tr class="user-row" data-name="{{ strtolower($user->name) }}" data-email="{{ strtolower($user->email) }}" data-role="{{ strtolower($user->role) }}" data-id="{{ $user->id }}">
+                            ?>
+                            <tr class="user-row" data-name="<?php echo e(strtolower($user->name)); ?>" data-email="<?php echo e(strtolower($user->email)); ?>" data-role="<?php echo e(strtolower($user->role)); ?>" data-id="<?php echo e($user->id); ?>">
                                 <td>
                                     <div class="user-cell">
                                         <div class="user-avatar-table">
-                                            {{ $userInitials }}
+                                            <?php echo e($userInitials); ?>
+
                                         </div>
                                         <div class="user-info">
-                                            <span class="user-name-table">{{ $user->name }}</span>
-                                            <span class="user-id">ID: {{ $user->id }}</span>
+                                            <span class="user-name-table"><?php echo e($user->name); ?></span>
+                                            <span class="user-id">ID: <?php echo e($user->id); ?></span>
                                         </div>
                                     </div>
                                 </td>
-                                <td>{{ $user->email }}</td>
+                                <td><?php echo e($user->email); ?></td>
                                 <td>
-                                    <span class="role-badge role-{{ $user->role }}">
-                                        {{ ucfirst($user->role) }}
+                                    <span class="role-badge role-<?php echo e($user->role); ?>">
+                                        <?php echo e(ucfirst($user->role)); ?>
+
                                     </span>
                                 </td>
                                 <td>
-                                    <span class="status-badge status-{{ $status }}">
-                                        {{ ucfirst($status) }}
+                                    <span class="status-badge status-<?php echo e($status); ?>">
+                                        <?php echo e(ucfirst($status)); ?>
+
                                     </span>
                                 </td>
                                 <td>
-                                    <div>{{ $user->created_at->format('M d, Y') }}</div>
+                                    <div><?php echo e($user->created_at->format('M d, Y')); ?></div>
                                     <div style="font-size: 0.85rem; color: var(--text-light);">
-                                        {{ $user->created_at->diffForHumans() }}
+                                        <?php echo e($user->created_at->diffForHumans()); ?>
+
                                     </div>
                                 </td>
                                 <td>
                                     <div class="action-buttons">
                                         <button type="button" class="btn-show show-user-btn"
-                                            data-user-id="{{ $user->id }}"
-                                            data-user-name="{{ $user->name }}"
-                                            data-user-email="{{ $user->email }}"
-                                            data-user-role="{{ $user->role }}"
-                                            data-user-status="{{ $status }}"
-                                            data-user-initials="{{ $userInitials }}"
-                                            data-user-created="{{ $user->created_at->format('M d, Y h:i A') }}"
-                                            data-user-updated="{{ $user->updated_at->format('M d, Y h:i A') }}"
-                                            data-user-last-login="{{ $user->last_login_at ? $user->last_login_at->format('M d, Y h:i A') : 'Never' }}"
-                                            data-user-nric="{{ $nric }}"
-                                            data-user-dob="{{ $dob }}"
-                                            data-user-gender="{{ $gender }}"
-                                            data-user-phone="{{ $phone }}"
-                                            data-user-address="{{ $address }}">
+                                            data-user-id="<?php echo e($user->id); ?>"
+                                            data-user-name="<?php echo e($user->name); ?>"
+                                            data-user-email="<?php echo e($user->email); ?>"
+                                            data-user-role="<?php echo e($user->role); ?>"
+                                            data-user-status="<?php echo e($status); ?>"
+                                            data-user-initials="<?php echo e($userInitials); ?>"
+                                            data-user-created="<?php echo e($user->created_at->format('M d, Y h:i A')); ?>"
+                                            data-user-updated="<?php echo e($user->updated_at->format('M d, Y h:i A')); ?>"
+                                            data-user-last-login="<?php echo e($user->last_login_at ? $user->last_login_at->format('M d, Y h:i A') : 'Never'); ?>"
+                                            data-user-nric="<?php echo e($nric); ?>"
+                                            data-user-dob="<?php echo e($dob); ?>"
+                                            data-user-gender="<?php echo e($gender); ?>"
+                                            data-user-phone="<?php echo e($phone); ?>"
+                                            data-user-address="<?php echo e($address); ?>">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
@@ -1938,17 +1945,17 @@
                                             Show
                                         </button>
 
-                                        <a href="{{ route('admin.users.edit', $user->id) }}" class="btn-edit">
+                                        <a href="<?php echo e(route('admin.users.edit', $user->id)); ?>" class="btn-edit">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                             </svg>
                                             Edit
                                         </a>
 
-                                        <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" class="delete-form" style="display: inline;">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="button" class="btn-delete delete-btn" data-user-id="{{ $user->id }}" data-user-name="{{ $user->name }}">
+                                        <form action="<?php echo e(route('admin.users.destroy', $user->id)); ?>" method="POST" class="delete-form" style="display: inline;">
+                                            <?php echo csrf_field(); ?>
+                                            <?php echo method_field('DELETE'); ?>
+                                            <button type="button" class="btn-delete delete-btn" data-user-id="<?php echo e($user->id); ?>" data-user-name="<?php echo e($user->name); ?>">
                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                                 </svg>
@@ -1958,63 +1965,63 @@
                                     </div>
                                 </td>
                             </tr>
-                        @endforeach
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </tbody>
                 </table>
 
-                @if($users->hasPages())
+                <?php if($users->hasPages()): ?>
                     <div class="pagination-wrapper">
                         <div class="pagination-info">
-                            Showing {{ $users->firstItem() }} to {{ $users->lastItem() }} of {{ $users->total() }} users
+                            Showing <?php echo e($users->firstItem()); ?> to <?php echo e($users->lastItem()); ?> of <?php echo e($users->total()); ?> users
                         </div>
                         <div class="pagination-container">
                             <nav class="pagination" aria-label="Pagination">
-                                @if($users->onFirstPage())
+                                <?php if($users->onFirstPage()): ?>
                                     <span class="pagination-arrow disabled">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                                         </svg>
                                         <span>Previous</span>
                                     </span>
-                                @else
-                                    <a href="{{ $users->previousPageUrl() }}" class="pagination-arrow">
+                                <?php else: ?>
+                                    <a href="<?php echo e($users->previousPageUrl()); ?>" class="pagination-arrow">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                                         </svg>
                                         <span>Previous</span>
                                     </a>
-                                @endif
+                                <?php endif; ?>
 
                                 <div class="pagination-numbers">
-                                    @foreach ($users->links()->elements[0] as $page => $url)
-                                        @if($page == $users->currentPage())
-                                            <span class="pagination-number active">{{ $page }}</span>
-                                        @else
-                                            <a href="{{ $url }}" class="pagination-number">{{ $page }}</a>
-                                        @endif
-                                    @endforeach
+                                    <?php $__currentLoopData = $users->links()->elements[0]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $page => $url): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <?php if($page == $users->currentPage()): ?>
+                                            <span class="pagination-number active"><?php echo e($page); ?></span>
+                                        <?php else: ?>
+                                            <a href="<?php echo e($url); ?>" class="pagination-number"><?php echo e($page); ?></a>
+                                        <?php endif; ?>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 </div>
 
-                                @if($users->hasMorePages())
-                                    <a href="{{ $users->nextPageUrl() }}" class="pagination-arrow">
+                                <?php if($users->hasMorePages()): ?>
+                                    <a href="<?php echo e($users->nextPageUrl()); ?>" class="pagination-arrow">
                                         <span>Next</span>
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                                         </svg>
                                     </a>
-                                @else
+                                <?php else: ?>
                                     <span class="pagination-arrow disabled">
                                         <span>Next</span>
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                                         </svg>
                                     </span>
-                                @endif
+                                <?php endif; ?>
                             </nav>
                         </div>
                     </div>
-                @endif
-            @else
+                <?php endif; ?>
+            <?php else: ?>
                 <div class="no-data">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197"/>
@@ -2022,7 +2029,7 @@
                     <h3>No users found</h3>
                     <p>There are no users to display.</p>
                 </div>
-            @endif
+            <?php endif; ?>
         </div>
     </main>
 
@@ -2105,8 +2112,8 @@
             <div class="modal-footer-delete">
                 <button type="button" class="btn-cancel" id="cancel-delete">Cancel</button>
                 <form id="delete-form" method="POST" style="display: none;">
-                    @csrf
-                    @method('DELETE')
+                    <?php echo csrf_field(); ?>
+                    <?php echo method_field('DELETE'); ?>
                 </form>
                 <button type="button" class="btn-confirm-delete" id="confirm-delete">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">
@@ -2658,4 +2665,4 @@
         });
     </script>
 </body>
-</html>
+</html><?php /**PATH C:\laragon\www\neo-faraid\resources\views/admin/users/index.blade.php ENDPATH**/ ?>

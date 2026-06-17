@@ -47,6 +47,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'last_login_at' => 'datetime',
     ];
 
+    // Helper methods
     public function isAdmin(): bool
     {
         return $this->role === 'admin';
@@ -57,6 +58,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->status === 'active' && $this->is_active;
     }
 
+    // Accessors for consistent formatting (used in views)
     public function getFormattedNricAttribute(): string
     {
         if (empty($this->nric)) return '';
@@ -81,10 +83,5 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         if (!$this->date_of_birth) return null;
         return $this->date_of_birth->age;
-    }
-
-    public function estatePreRegistrations()
-    {
-        return $this->hasMany(EstatePreRegistration::class);
     }
 }
