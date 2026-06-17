@@ -1,12 +1,13 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Users • Neo Faraid Admin</title>
-    <meta name="description" content="Manage system users in Neo Faraid Admin Panel">
+    <title>Manage Feedback • Neo Faraid Admin</title>
+    <meta name="description" content="Review and manage user feedback and ratings in Neo Faraid Admin Panel">
+    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
         
@@ -21,7 +22,7 @@
             --success-color: #25D366;
             --success-dark: #128C7E;
             --warning-color: #ffc107;
-            --info-color: #138496; /* Updated show button color */
+            --info-color: #138496;
             --light-bg: #f8f9fa;
             --light-border: #e9ecef;
             --text-primary: #495057;
@@ -573,6 +574,56 @@
             font-size: 0.95rem;
         }
         
+        /* ===== STATS CARDS ===== */
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stats-card {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: var(--border-radius-md);
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            border-left: 4px solid var(--primary-color);
+            cursor: pointer;
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .stats-card.total-feedback { }
+        .stats-card.approved-feedback { }
+        .stats-card.pending-feedback { }
+        .stats-card.rejected-feedback { }
+        
+        .stats-card-title {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .stats-card-value {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+        
+        .stats-card.total-feedback .stats-card-value { color: #1a5fb4; }
+        .stats-card.approved-feedback .stats-card-value { color: #1a5fb4; }
+        .stats-card.pending-feedback .stats-card-value { color: #1a5fb4; }
+        .stats-card.rejected-feedback .stats-card-value { color: #1a5fb4; }
+        
+        .stats-card-change {
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+        
         /* ===== BUTTONS ===== */
         .btn {
             padding: 0.75rem 1.5rem;
@@ -601,7 +652,7 @@
             background: linear-gradient(135deg, var(--secondary-color) 0%, var(--primary-color) 100%);
         }
         
-        /* ===== USER DETAILS MODAL ===== */
+        /* ===== FEEDBACK DETAILS MODAL ===== */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -681,7 +732,7 @@
             padding: 2rem;
         }
         
-        .user-detail-grid {
+        .feedback-detail-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 1.5rem;
@@ -710,40 +761,19 @@
             font-weight: 600;
         }
         
-        .user-info-container {
+        .feedback-message-container {
             grid-column: 1 / -1;
             margin-top: 1rem;
         }
         
-        .user-info-avatar {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-        
-        .avatar-large {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 700;
-            font-size: 2rem;
-            box-shadow: var(--shadow-md);
-        }
-        
-        .user-info-text h3 {
-            font-size: 1.5rem;
-            color: var(--primary-color);
-            margin-bottom: 0.5rem;
-        }
-        
-        .user-info-text p {
-            color: var(--text-light);
+        .feedback-message-box {
+            background: var(--light-bg);
+            padding: 1.5rem;
+            border-radius: var(--border-radius-md);
+            line-height: 1.7;
+            white-space: pre-wrap;
+            color: var(--text-primary);
+            border-left: 4px solid var(--accent-color);
         }
         
         .modal-footer {
@@ -847,6 +877,7 @@
             transform: translateX(5px);
         }
         
+        /* User Cell */
         .user-cell {
             display: flex;
             align-items: center;
@@ -875,59 +906,51 @@
         .user-name-table {
             font-weight: 600;
             color: var(--primary-color);
+            font-size: 0.95rem;
         }
         
-        .user-id {
+        .user-email-table {
             font-size: 0.85rem;
             color: var(--text-light);
         }
         
+        .feedback-id {
+            font-weight: 600;
+            color: var(--primary-color);
+            font-size: 1rem;
+        }
+        
+        .rating-stars {
+            color: #fbbf24;
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+        }
+        
         /* Status Badges */
         .status-badge {
+            display: inline-block;
             padding: 0.4rem 1rem;
             border-radius: var(--border-radius-xl);
             font-size: 0.85rem;
             font-weight: 600;
-            display: inline-block;
         }
         
-        .status-active {
-            background: linear-gradient(135deg, rgba(37, 211, 102, 0.1) 0%, rgba(33, 136, 56, 0.1) 100%);
-            color: var(--success-color);
-            border: 1px solid rgba(37, 211, 102, 0.2);
+        .status-approved {
+            background: linear-gradient(135deg, rgba(40, 167, 69, 0.1) 0%, rgba(33, 136, 56, 0.1) 100%);
+            color: #28a745;
+            border: 1px solid rgba(40, 167, 69, 0.2);
         }
         
-        .status-inactive {
-            background: linear-gradient(135deg, rgba(220, 53, 69, 0.1) 0%, rgba(200, 35, 51, 0.1) 100%);
-            color: var(--danger-color);
-            border: 1px solid rgba(220, 53, 69, 0.2);
-        }
-        
-        /* Role Badges */
-        .role-badge {
-            padding: 0.4rem 1rem;
-            border-radius: var(--border-radius-xl);
-            font-size: 0.85rem;
-            font-weight: 600;
-            display: inline-block;
-        }
-        
-        .role-user {
-            background: linear-gradient(135deg, rgba(0, 123, 255, 0.1) 0%, rgba(0, 86, 179, 0.1) 100%);
-            color: #0069d9;
-            border: 1px solid rgba(0, 123, 255, 0.2);
-        }
-        
-        .role-admin {
+        .status-pending {
             background: linear-gradient(135deg, rgba(255, 193, 7, 0.1) 0%, rgba(224, 168, 0, 0.1) 100%);
-            color: var(--warning-color);
+            color: #ffc107;
             border: 1px solid rgba(255, 193, 7, 0.2);
         }
         
-        .role-super-admin {
-            background: linear-gradient(135deg, rgba(26, 95, 180, 0.1) 0%, rgba(13, 45, 92, 0.1) 100%);
-            color: var(--primary-dark);
-            border: 1px solid rgba(26, 95, 180, 0.2);
+        .status-rejected {
+            background: linear-gradient(135deg, rgba(220, 53, 69, 0.1) 0%, rgba(200, 35, 51, 0.1) 100%);
+            color: #dc3545;
+            border: 1px solid rgba(220, 53, 69, 0.2);
         }
         
         /* ===== ACTION BUTTONS ===== */
@@ -937,7 +960,7 @@
             flex-wrap: wrap;
         }
         
-        /* SHOW BUTTON */
+        /* SHOW BUTTON*/
         .btn-show {
             background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
             color: white;
@@ -960,14 +983,13 @@
             box-shadow: var(--shadow-md);
         }
         
-        .btn-edit {
-            background: linear-gradient(135deg, var(--warning-color) 0%, #e0a800 100%);
+        .btn-approve {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
             color: white;
             border: none;
             padding: 0.5rem 1rem;
             border-radius: var(--border-radius-sm);
             cursor: pointer;
-            text-decoration: none;
             font-size: 0.875rem;
             font-weight: 500;
             display: flex;
@@ -977,7 +999,28 @@
             box-shadow: var(--shadow-sm);
         }
         
-        .btn-edit:hover {
+        .btn-approve:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .btn-reject {
+            background: linear-gradient(135deg, var(--warning-color) 0%, #e0a800 100%);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius-sm);
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .btn-reject:hover {
             transform: translateY(-2px);
             box-shadow: var(--shadow-md);
         }
@@ -1009,7 +1052,8 @@
         }
         
         .btn-show svg,
-        .btn-edit svg,
+        .btn-approve svg,
+        .btn-reject svg,
         .btn-delete svg {
             width: 16px;
             height: 16px;
@@ -1096,14 +1140,14 @@
             line-height: 1.6;
         }
         
-        .user-details-delete {
+        .feedback-details-delete {
             background: var(--light-bg);
             padding: 1rem;
             border-radius: var(--border-radius-md);
             margin-top: 1rem;
         }
         
-        .user-details-delete strong {
+        .feedback-details-delete strong {
             color: var(--primary-color);
             display: block;
             margin-bottom: 0.5rem;
@@ -1400,6 +1444,10 @@
             .user-profile-info {
                 display: none;
             }
+            
+            .stats-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
         
         @media (max-width: 768px) {
@@ -1436,6 +1484,10 @@
             
             .search-box {
                 width: 100%;
+            }
+            
+            .stats-cards {
+                grid-template-columns: 1fr;
             }
             
             .table-container {
@@ -1476,7 +1528,7 @@
                 width: 100%;
             }
             
-            .user-detail-grid {
+            .feedback-detail-grid {
                 grid-template-columns: 1fr;
             }
             
@@ -1504,7 +1556,8 @@
             }
             
             .btn-show,
-            .btn-edit,
+            .btn-approve,
+            .btn-reject,
             .btn-delete {
                 padding: 0.4rem 0.75rem;
                 font-size: 0.75rem;
@@ -1512,12 +1565,6 @@
             
             th, td {
                 padding: 0.75rem;
-            }
-            
-            .status-badge,
-            .role-badge {
-                font-size: 0.75rem;
-                padding: 0.3rem 0.75rem;
             }
             
             .pagination {
@@ -1534,6 +1581,10 @@
                 padding: 0.4rem 0.6rem;
                 min-width: 35px;
                 font-size: 0.875rem;
+            }
+            
+            .stats-card-value {
+                font-size: 1.5rem;
             }
         }
         
@@ -1734,7 +1785,7 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197"/></svg>
                                 <span>Manage Users</span>
                             </a>
-                            <a href="<?php echo e(route('admin.feedback.index')); ?>" class="dropdown-nav-item <?php echo e(request()->is('admin/feedback*') ? 'active' : ''); ?>">
+                            <a href="<?php echo e(route('admin.feedback.index')); ?>" class="dropdown-nav-item active">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/></svg>
                                 <span>Manage Feedback</span>
                             </a>
@@ -1746,7 +1797,7 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
                                 <span>Manage Calculations</span>
                             </a>
-                            <a href="<?php echo e(route('admin.instant-estate.index')); ?>" class="dropdown-nav-item active">
+                            <a href="<?php echo e(route('admin.instant-estate.index')); ?>" class="dropdown-nav-item <?php echo e(request()->is('admin/instant-estate*') ? 'active' : ''); ?>">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                                 <span>Manage Instant Estate</span>
                             </a>
@@ -1792,10 +1843,37 @@
         <!-- Page Header -->
         <header class="page-header">
             <div class="page-title">
-                <h1>Manage Users</h1>
-                <p class="page-subtitle">View and manage all system users</p>
+                <h1>Manage Feedback</h1>
+                <p class="page-subtitle">Review and manage user feedback and ratings</p>
             </div>
         </header>
+        
+        <!-- Stats Cards - Live Updated -->
+        <div class="stats-cards" id="stats-cards">
+            <div class="stats-card total-feedback" data-filter="all">
+                <div class="stats-card-title">Total Feedback</div>
+                <div class="stats-card-value" id="stat-total"><?php echo e($totalFeedback ?? 0); ?></div>
+                <div class="stats-card-change">All feedback submissions</div>
+            </div>
+            
+            <div class="stats-card approved-feedback" data-filter="approved">
+                <div class="stats-card-title">Approved</div>
+                <div class="stats-card-value" id="stat-approved"><?php echo e($approvedCount ?? 0); ?></div>
+                <div class="stats-card-change">Approved feedback</div>
+            </div>
+            
+            <div class="stats-card pending-feedback" data-filter="pending">
+                <div class="stats-card-title">Pending</div>
+                <div class="stats-card-value" id="stat-pending"><?php echo e($pendingCount ?? 0); ?></div>
+                <div class="stats-card-change">Awaiting review</div>
+            </div>
+            
+            <div class="stats-card rejected-feedback" data-filter="rejected">
+                <div class="stats-card-title">Rejected</div>
+                <div class="stats-card-value" id="stat-rejected"><?php echo e($rejectedCount ?? 0); ?></div>
+                <div class="stats-card-change">Rejected feedback</div>
+            </div>
+        </div>
         
         <!-- Alert Messages -->
         <?php if(session('success')): ?>
@@ -1824,118 +1902,139 @@
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
-                <input type="text" 
-                       placeholder="Search users by name, email, or role..." 
-                       id="search-input"
-                       value="<?php echo e(request('search')); ?>">
+                <input type="text" placeholder="Search feedback by user or message..." id="search-input">
             </div>
         </div>
         
         <!-- Table Container -->
         <div class="table-container">
-            <?php if($users->count() > 0): ?>
+            <?php if($feedbackList->count() > 0): ?>
                 <table>
                     <thead>
                         <tr>
+                            <th>ID</th>
                             <th>User</th>
-                            <th>Email</th>
-                            <th>Role</th>
+                            <th>Rating</th>
+                            <th>Message</th>
                             <th>Status</th>
-                            <th>Joined</th>
+                            <th>Submitted</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="user-table-body">
-                        <?php $__currentLoopData = $users; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $user): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                            <?php
-                                $status = $user->display_status ?? 
-                                        ($user->last_login_at && $user->last_login_at >= now()->subDays(30) ? 'active' : 'inactive');
-                                $userInitials = strtoupper(substr($user->name, 0, 1));
-                            ?>
-                            <tr class="user-row" data-name="<?php echo e(strtolower($user->name)); ?>" data-email="<?php echo e(strtolower($user->email)); ?>" data-role="<?php echo e(strtolower($user->role)); ?>" data-id="<?php echo e($user->id); ?>">
-                                <td>
-                                    <div class="user-cell">
-                                        <div class="user-avatar-table">
-                                            <?php echo e($userInitials); ?>
-
-                                        </div>
-                                        <div class="user-info">
-                                            <span class="user-name-table"><?php echo e($user->name); ?></span>
-                                            <span class="user-id">ID: <?php echo e($user->id); ?></span>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td><?php echo e($user->email); ?></td>
-                                <td>
-                                    <span class="role-badge role-<?php echo e($user->role); ?>">
-                                        <?php echo e(ucfirst($user->role)); ?>
-
-                                    </span>
-                                </td>
-                                <td>
-                                    <span class="status-badge status-<?php echo e($status); ?>">
-                                        <?php echo e(ucfirst($status)); ?>
-
-                                    </span>
-                                </td>
-                                <td>
-                                    <div><?php echo e($user->created_at->format('M d, Y')); ?></div>
-                                    <div style="font-size: 0.85rem; color: var(--text-light);">
-                                        <?php echo e($user->created_at->diffForHumans()); ?>
+                    <tbody id="feedback-table-body">
+                        <?php $__currentLoopData = $feedbackList; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $feedback): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <?php
+                            $userInitials = strtoupper(substr($feedback->user->name ?? 'A', 0, 1));
+                        ?>
+                        <tr class="feedback-row" 
+                            data-id="<?php echo e($feedback->id); ?>"
+                            data-name="<?php echo e(strtolower($feedback->user->name ?? '')); ?>" 
+                            data-message="<?php echo e(strtolower($feedback->message)); ?>"
+                            data-status="<?php echo e($feedback->status); ?>">
+                            <td>
+                                <span class="feedback-id">#<?php echo e($feedback->id); ?></span>
+                            </td>
+                            <td>
+                                <div class="user-cell">
+                                    <div class="user-avatar-table">
+                                        <?php echo e($userInitials); ?>
 
                                     </div>
-                                </td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button type="button" class="btn-show show-user-btn" 
-                                                data-user-id="<?php echo e($user->id); ?>"
-                                                data-user-name="<?php echo e($user->name); ?>"
-                                                data-user-email="<?php echo e($user->email); ?>"
-                                                data-user-role="<?php echo e($user->role); ?>"
-                                                data-user-status="<?php echo e($status); ?>"
-                                                data-user-initials="<?php echo e($userInitials); ?>"
-                                                data-user-created="<?php echo e($user->created_at->format('M d, Y h:i A')); ?>"
-                                                data-user-updated="<?php echo e($user->updated_at->format('M d, Y h:i A')); ?>"
-                                                data-user-last-login="<?php echo e($user->last_login_at ? $user->last_login_at->format('M d, Y h:i A') : 'Never'); ?>">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                            </svg>
-                                            Show
-                                        </button>
-                                        
-                                        <a href="<?php echo e(route('admin.users.edit', $user->id)); ?>" class="btn-edit">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                            </svg>
-                                            Edit
-                                        </a>
-                                        <form action="<?php echo e(route('admin.users.destroy', $user->id)); ?>" method="POST" class="delete-form" style="display: inline;">
+                                    <div class="user-info">
+                                        <span class="user-name-table"><?php echo e($feedback->user->name ?? 'Anonymous'); ?></span>
+                                        <span class="user-email-table"><?php echo e($feedback->user->email ?? ''); ?></span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="rating-stars">
+                                    <?php for($i = 1; $i <= 5; $i++): ?>
+                                        <?php echo e($i <= $feedback->rating ? '★' : '☆'); ?>
+
+                                    <?php endfor; ?>
+                                </div>
+                            </td>
+                            <td title="<?php echo e($feedback->message); ?>">
+                                <?php echo e(Str::limit($feedback->message, 50)); ?>
+
+                            </td>
+                            <td>
+                                <span class="status-badge status-<?php echo e($feedback->status); ?>">
+                                    <?php echo e(ucfirst($feedback->status)); ?>
+
+                                </span>
+                            </td>
+                            <td><?php echo e($feedback->created_at->format('M d, Y')); ?></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button type="button" class="btn-show show-feedback-btn" 
+                                            data-feedback-id="<?php echo e($feedback->id); ?>"
+                                            data-user-name="<?php echo e($feedback->user->name ?? 'Anonymous'); ?>"
+                                            data-user-email="<?php echo e($feedback->user->email ?? 'N/A'); ?>"
+                                            data-rating="<?php echo e($feedback->rating); ?>"
+                                            data-message="<?php echo e($feedback->message); ?>"
+                                            data-status="<?php echo e($feedback->status); ?>"
+                                            data-created="<?php echo e($feedback->created_at->format('M d, Y h:i A')); ?>"
+                                            data-user-initials="<?php echo e($userInitials); ?>">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                        </svg>
+                                        Show
+                                    </button>
+                                    
+                                    <?php if($feedback->status != 'approved'): ?>
+                                        <form action="<?php echo e(route('admin.feedback.approve', $feedback->id)); ?>" method="POST" class="approve-form" style="display: inline;">
                                             <?php echo csrf_field(); ?>
-                                            <?php echo method_field('DELETE'); ?>
-                                            <button type="button" class="btn-delete delete-btn" data-user-id="<?php echo e($user->id); ?>" data-user-name="<?php echo e($user->name); ?>">
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                            <button type="submit" class="btn-approve">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                                                    <path fill-rule="evenodd" d="M19.916 4.626a.75.75 0 01.208 1.04l-9 13.5a.75.75 0 01-1.154.114l-6-6a.75.75 0 011.06-1.06l5.353 5.353 8.493-12.739a.75.75 0 011.04-.208z" clip-rule="evenodd" />
                                                 </svg>
-                                                Delete
+                                                Approve
                                             </button>
                                         </form>
-                                    </div>
-                                </td>
-                            </tr>
+                                    <?php endif; ?>
+                                    
+                                    <?php if($feedback->status != 'rejected'): ?>
+                                        <form action="<?php echo e(route('admin.feedback.reject', $feedback->id)); ?>" method="POST" class="reject-form" style="display: inline;">
+                                            <?php echo csrf_field(); ?>
+                                            <button type="submit" class="btn-reject">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 6L6 18M6 6l12 12" />
+                                                </svg>
+                                                Reject
+                                            </button>
+                                        </form>
+                                    <?php endif; ?>
+                                    
+                                    <form action="<?php echo e(route('admin.feedback.destroy', $feedback->id)); ?>" method="POST" class="delete-form" style="display: inline;">
+                                        <?php echo csrf_field(); ?>
+                                        <?php echo method_field('DELETE'); ?>
+                                        <button type="button" class="btn-delete delete-btn" 
+                                                data-feedback-id="<?php echo e($feedback->id); ?>" 
+                                                data-user-name="<?php echo e($feedback->user->name ?? 'Anonymous'); ?>">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                            </svg>
+                                            Delete
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </tbody>
                 </table>
                 
-                <?php if($users->hasPages()): ?>
+                <?php if($feedbackList->hasPages()): ?>
                 <div class="pagination-wrapper">
                     <div class="pagination-info">
-                        Showing <?php echo e($users->firstItem()); ?> to <?php echo e($users->lastItem()); ?> of <?php echo e($users->total()); ?> users
+                        Showing <?php echo e($feedbackList->firstItem()); ?> to <?php echo e($feedbackList->lastItem()); ?> of <?php echo e($feedbackList->total()); ?> results
                     </div>
                     <div class="pagination-container">
                         <nav class="pagination" aria-label="Pagination">
                             
-                            <?php if($users->onFirstPage()): ?>
+                            <?php if($feedbackList->onFirstPage()): ?>
                                 <span class="pagination-arrow disabled">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
@@ -1943,7 +2042,7 @@
                                     <span>Previous</span>
                                 </span>
                             <?php else: ?>
-                                <a href="<?php echo e($users->previousPageUrl()); ?>" class="pagination-arrow">
+                                <a href="<?php echo e($feedbackList->previousPageUrl()); ?>" class="pagination-arrow">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                                     </svg>
@@ -1953,8 +2052,8 @@
                             
                             
                             <div class="pagination-numbers">
-                                <?php $__currentLoopData = $users->links()->elements[0]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $page => $url): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                    <?php if($page == $users->currentPage()): ?>
+                                <?php $__currentLoopData = $feedbackList->links()->elements[0]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $page => $url): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <?php if($page == $feedbackList->currentPage()): ?>
                                         <span class="pagination-number active"><?php echo e($page); ?></span>
                                     <?php else: ?>
                                         <a href="<?php echo e($url); ?>" class="pagination-number"><?php echo e($page); ?></a>
@@ -1963,8 +2062,8 @@
                             </div>
                             
                             
-                            <?php if($users->hasMorePages()): ?>
-                                <a href="<?php echo e($users->nextPageUrl()); ?>" class="pagination-arrow">
+                            <?php if($feedbackList->hasMorePages()): ?>
+                                <a href="<?php echo e($feedbackList->nextPageUrl()); ?>" class="pagination-arrow">
                                     <span>Next</span>
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -1986,48 +2085,48 @@
             <?php else: ?>
                 <div class="no-data">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/>
                     </svg>
-                    <h3>No users found</h3>
-                    <p>There are no users to display.</p>
+                    <h3>No feedback found</h3>
+                    <p>There are no feedback submissions to display.</p>
                 </div>
             <?php endif; ?>
         </div>
     </main>
 
-    <!-- User Details Modal -->
-    <div id="userDetailsModal" class="modal-overlay" style="display: none;">
+    <!-- Feedback Details Modal -->
+    <div id="feedbackDetailsModal" class="modal-overlay" style="display: none;">
         <div class="modal-content">
             <div class="modal-header">
                 <h2 class="modal-title">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="24" height="24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/>
                     </svg>
-                    User Details
+                    Feedback Details
                 </h2>
-                <button class="modal-close" id="closeUserModal">
+                <button class="modal-close" id="closeFeedbackModal">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
             </div>
             <div class="modal-body">
-                <div id="userModalLoading" style="text-align: center; padding: 3rem;">
+                <div id="feedbackModalLoading" style="text-align: center; padding: 3rem;">
                     <div style="margin-bottom: 1rem;">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="48" height="48" style="color: var(--primary-color); animation: spin 1s linear infinite;">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                         </svg>
                     </div>
-                    <p style="color: var(--text-light);">Loading user details...</p>
+                    <p style="color: var(--text-light);">Loading feedback details...</p>
                 </div>
-                <div id="userModalContent" style="display: none;">
-                    <!-- User details will be loaded here dynamically -->
+                <div id="feedbackModalContent" style="display: none;">
+                    <!-- Feedback details will be loaded here dynamically -->
                 </div>
-                <div id="userModalError" style="display: none; text-align: center; padding: 3rem; color: var(--danger-color);">
+                <div id="feedbackModalError" style="display: none; text-align: center; padding: 3rem; color: var(--danger-color);">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="48" height="48" style="margin-bottom: 1rem;">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    <p id="userErrorMessage">Error loading user details. Please try again.</p>
+                    <p id="feedbackErrorMessage">Error loading feedback details. Please try again.</p>
                 </div>
             </div>
         </div>
@@ -2045,12 +2144,12 @@
                 </h3>
             </div>
             <div class="modal-body-delete">
-                <p>Are you sure you want to delete this user? This action cannot be undone.</p>
-                <div class="user-details-delete">
-                    <strong>User Details:</strong>
-                    <span id="user-name-text"></span>
+                <p>Are you sure you want to delete this feedback? This action cannot be undone.</p>
+                <div class="feedback-details-delete">
+                    <strong>Feedback Details:</strong>
+                    <span id="feedback-name-text"></span>
                 </div>
-                <p><strong>Note:</strong> This will permanently remove the user and all associated data from the system.</p>
+                <p><strong>Note:</strong> This will permanently remove the feedback from the system.</p>
             </div>
             <div class="modal-footer-delete">
                 <button type="button" class="btn-cancel" id="cancel-delete">Cancel</button>
@@ -2062,7 +2161,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>
-                    Yes, Delete User
+                    Yes, Delete Feedback
                 </button>
             </div>
         </div>
@@ -2083,7 +2182,7 @@
                 this.state = {
                     isDropdownOpen: false,
                     isTouchDevice: 'ontouchstart' in window || navigator.maxTouchPoints > 0,
-                    activeNavItem: 'users'
+                    activeNavItem: 'feedback'
                 };
                 
                 this.elements = {};
@@ -2143,7 +2242,6 @@
             }
             
             setupAccessibility() {
-                // Set ARIA attributes
                 if (this.elements.userProfileBtn) {
                     this.elements.userProfileBtn.setAttribute('role', 'button');
                     this.elements.userProfileBtn.setAttribute('aria-expanded', 'false');
@@ -2154,13 +2252,11 @@
                     this.elements.userProfileDropdown.setAttribute('aria-label', 'User profile menu');
                 }
                 
-                // Set roles for nav links
                 const navLinks = document.querySelectorAll('.nav-link');
                 navLinks.forEach(link => {
                     link.setAttribute('role', 'menuitem');
                 });
                 
-                // Set roles for dropdown items
                 const dropdownItems = document.querySelectorAll('.dropdown-nav-item, .quick-action-item, .account-link');
                 dropdownItems.forEach(item => {
                     item.setAttribute('role', 'menuitem');
@@ -2168,7 +2264,6 @@
             }
             
             setupKeyboardNavigation() {
-                // Add keyboard navigation to main nav
                 if (this.elements.navLinks) {
                     const navItems = this.elements.navLinks.querySelectorAll('.nav-link');
                     navItems.forEach((item, index) => {
@@ -2197,7 +2292,6 @@
                     });
                 }
                 
-                // Add keyboard navigation to dropdown
                 if (this.elements.dropdownNav) {
                     const dropdownItems = this.elements.dropdownNav.querySelectorAll('.dropdown-nav-item');
                     dropdownItems.forEach((item, index) => {
@@ -2219,7 +2313,6 @@
             setupTouchGestures() {
                 if (!this.state.isTouchDevice) return;
                 
-                // Add swipe gesture support for dropdown
                 let touchStartY = 0;
                 
                 if (this.elements.userProfileDropdown) {
@@ -2233,13 +2326,12 @@
                         const touchY = e.touches[0].clientY;
                         const diff = touchStartY - touchY;
                         
-                        if (diff > 50) { // Swipe up
+                        if (diff > 50) {
                             this.closeUserDropdown();
                         }
                     });
                 }
                 
-                // Prevent zoom on double tap for nav items
                 const navItems = document.querySelectorAll('.nav-link');
                 navItems.forEach(item => {
                     item.addEventListener('touchstart', (e) => {
@@ -2251,7 +2343,6 @@
             }
             
             updateActiveStates() {
-                // Update main nav active states
                 const navItems = document.querySelectorAll('.nav-link');
                 navItems.forEach(item => {
                     const navItem = item.dataset.navItem;
@@ -2264,7 +2355,6 @@
                     }
                 });
                 
-                // Update dropdown nav active states
                 const dropdownItems = document.querySelectorAll('.dropdown-nav-item');
                 dropdownItems.forEach(item => {
                     const href = item.getAttribute('href');
@@ -2280,8 +2370,6 @@
                 if (navItem) {
                     this.state.activeNavItem = navItem;
                     this.updateActiveStates();
-                    
-                    // Store in session for persistence
                     sessionStorage.setItem('activeNavItem', navItem);
                 }
             }
@@ -2296,7 +2384,6 @@
             }
             
             handleKeydown(e) {
-                // Close dropdown on Escape
                 if (e.key === 'Escape' && this.state.isDropdownOpen) {
                     this.closeUserDropdown();
                     if (this.elements.userProfileBtn) {
@@ -2304,7 +2391,6 @@
                     }
                 }
                 
-                // Trap focus in dropdown when open
                 if (e.key === 'Tab' && this.state.isDropdownOpen && this.elements.userProfileDropdown) {
                     this.trapFocus(this.elements.userProfileDropdown, e);
                 }
@@ -2344,12 +2430,10 @@
                     this.elements.userProfileDropdown.style.display = 'block';
                     this.elements.userProfileDropdown.setAttribute('aria-hidden', 'false');
                     
-                    // Add animation class
                     setTimeout(() => {
                         this.elements.userProfileDropdown.classList.add('active');
                     }, 10);
                     
-                    // Focus first item
                     setTimeout(() => {
                         const firstItem = this.elements.userProfileDropdown.querySelector('a, button');
                         if (firstItem) firstItem.focus();
@@ -2364,7 +2448,6 @@
                     }
                 }
                 
-                // Add backdrop for mobile
                 if (window.innerWidth < 768) {
                     this.addBackdrop();
                 }
@@ -2377,7 +2460,6 @@
                     this.elements.userProfileDropdown.classList.remove('active');
                     this.elements.userProfileDropdown.setAttribute('aria-hidden', 'true');
                     
-                    // Remove after animation
                     setTimeout(() => {
                         if (!this.state.isDropdownOpen) {
                             this.elements.userProfileDropdown.style.display = 'none';
@@ -2393,7 +2475,6 @@
                     }
                 }
                 
-                // Remove backdrop
                 this.removeBackdrop();
             }
             
@@ -2425,31 +2506,127 @@
             }
         }
 
-        // User Management Class
-        class UserManager {
+        // Auto-Update Stats Class
+        class StatsUpdater {
+            constructor() {
+                this.statsEndpoint = '/api/feedback/stats';  // Uses adminStats from controller
+                this.updateInterval = 10000; // 10 seconds
+                this.elements = {
+                    total: document.getElementById('stat-total'),
+                    approved: document.getElementById('stat-approved'),
+                    pending: document.getElementById('stat-pending'),
+                    rejected: document.getElementById('stat-rejected')
+                };
+                this.init();
+            }
+            
+            init() {
+                this.startPolling();
+            }
+            
+            async fetchStats() {
+                try {
+                    const response = await fetch('/api/admin/feedback/stats', {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        }
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    
+                    const data = await response.json();
+                    
+                    if (data.success && data.data) {
+                        this.updateUI(data.data);
+                    }
+                } catch (error) {
+                    console.error('Error fetching admin stats:', error);
+                    // Silently fail - don't disrupt the user experience
+                }
+            }
+            
+            updateUI(stats) {
+                if (this.elements.total && stats.total !== undefined) {
+                    this.animateValue(this.elements.total, stats.total);
+                }
+                if (this.elements.approved && stats.approved !== undefined) {
+                    this.animateValue(this.elements.approved, stats.approved);
+                }
+                if (this.elements.pending && stats.pending !== undefined) {
+                    this.animateValue(this.elements.pending, stats.pending);
+                }
+                if (this.elements.rejected && stats.rejected !== undefined) {
+                    this.animateValue(this.elements.rejected, stats.rejected);
+                }
+            }
+            
+            animateValue(element, newValue) {
+                const currentValue = parseInt(element.textContent) || 0;
+                if (currentValue === newValue) return;
+                
+                const duration = 500;
+                const startTime = performance.now();
+                const startValue = currentValue;
+                const change = newValue - startValue;
+                
+                const animate = (currentTime) => {
+                    const elapsed = currentTime - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+                    
+                    // Easing function for smooth animation
+                    const easeOutCubic = 1 - Math.pow(1 - progress, 3);
+                    const currentNumber = Math.round(startValue + (change * easeOutCubic));
+                    
+                    element.textContent = currentNumber;
+                    
+                    if (progress < 1) {
+                        requestAnimationFrame(animate);
+                    }
+                };
+                
+                requestAnimationFrame(animate);
+            }
+            
+            startPolling() {
+                // Initial fetch
+                this.fetchStats();
+                
+                // Set up interval
+                setInterval(() => {
+                    this.fetchStats();
+                }, this.updateInterval);
+            }
+        }
+
+        // Feedback Management Class
+        class FeedbackManager {
             constructor() {
                 // Modal elements
-                this.userModal = document.getElementById('userDetailsModal');
-                this.closeUserModalBtn = document.getElementById('closeUserModal');
-                this.userModalContent = document.getElementById('userModalContent');
-                this.userModalLoading = document.getElementById('userModalLoading');
-                this.userModalError = document.getElementById('userModalError');
-                this.userErrorMessage = document.getElementById('userErrorMessage');
+                this.feedbackModal = document.getElementById('feedbackDetailsModal');
+                this.closeFeedbackModalIcon = document.getElementById('closeFeedbackModal');
+                this.feedbackModalContent = document.getElementById('feedbackModalContent');
+                this.feedbackModalLoading = document.getElementById('feedbackModalLoading');
+                this.feedbackModalError = document.getElementById('feedbackModalError');
+                this.feedbackErrorMessage = document.getElementById('feedbackErrorMessage');
                 
                 // Delete modal elements
                 this.deleteButtons = document.querySelectorAll('.delete-btn');
                 this.deleteModal = document.getElementById('delete-modal');
                 this.cancelDeleteBtn = document.getElementById('cancel-delete');
                 this.confirmDeleteBtn = document.getElementById('confirm-delete');
-                this.userNameText = document.getElementById('user-name-text');
+                this.feedbackNameText = document.getElementById('feedback-name-text');
                 this.deleteForms = document.querySelectorAll('.delete-form');
                 
-                // User data
-                this.showButtons = document.querySelectorAll('.show-user-btn');
+                // Feedback data
+                this.showButtons = document.querySelectorAll('.show-feedback-btn');
                 
                 // Search elements
                 this.searchInput = document.getElementById('search-input');
-                this.userRows = document.querySelectorAll('.user-row');
+                this.feedbackRows = document.querySelectorAll('.feedback-row');
                 
                 // State
                 this.currentDeleteId = null;
@@ -2465,25 +2642,25 @@
             }
             
             bindEvents() {
-                // Show user details
+                // Show feedback details
                 this.showButtons.forEach(button => {
-                    button.addEventListener('click', () => this.showUserDetails(button));
+                    button.addEventListener('click', () => this.showFeedbackDetails(button));
                 });
                 
-                // Close user modal
-                if (this.closeUserModalBtn) this.closeUserModalBtn.addEventListener('click', () => this.closeUserModal());
+                // Close feedback modal
+                if (this.closeFeedbackModalIcon) this.closeFeedbackModalIcon.addEventListener('click', () => this.closeFeedbackModal());
                 
                 // Close modal on overlay click
-                this.userModal.addEventListener('click', (e) => {
-                    if (e.target === this.userModal) {
-                        this.closeUserModal();
+                this.feedbackModal.addEventListener('click', (e) => {
+                    if (e.target === this.feedbackModal) {
+                        this.closeFeedbackModal();
                     }
                 });
                 
                 // Close modal with Escape key
                 document.addEventListener('keydown', (e) => {
-                    if (e.key === 'Escape' && this.userModal.style.display === 'flex') {
-                        this.closeUserModal();
+                    if (e.key === 'Escape' && this.feedbackModal.style.display === 'flex') {
+                        this.closeFeedbackModal();
                     }
                 });
                 
@@ -2513,71 +2690,67 @@
                 });
             }
             
-            showUserDetails(button) {
-                const userId = button.getAttribute('data-user-id');
-                const name = button.getAttribute('data-user-name');
-                const email = button.getAttribute('data-user-email');
-                const role = button.getAttribute('data-user-role');
-                const status = button.getAttribute('data-user-status');
-                const initials = button.getAttribute('data-user-initials');
-                const created = button.getAttribute('data-user-created');
-                const updated = button.getAttribute('data-user-updated');
-                const lastLogin = button.getAttribute('data-user-last-login');
+            showFeedbackDetails(button) {
+                const feedbackId = button.getAttribute('data-feedback-id');
+                const userName = button.getAttribute('data-user-name');
+                const userEmail = button.getAttribute('data-user-email');
+                const rating = button.getAttribute('data-rating');
+                const message = button.getAttribute('data-message');
+                const status = button.getAttribute('data-status');
+                const created = button.getAttribute('data-created');
+                const userInitials = button.getAttribute('data-user-initials');
                 
-                this.showUserModal({
-                    id: userId,
-                    name: name,
-                    email: email,
-                    role: role,
+                this.showFeedbackModal({
+                    id: feedbackId,
+                    userName: userName,
+                    userEmail: userEmail,
+                    rating: rating,
+                    message: message,
                     status: status,
-                    initials: initials,
                     created: created,
-                    updated: updated,
-                    lastLogin: lastLogin
+                    userInitials: userInitials
                 });
             }
             
-            showUserModal(user) {
+            showFeedbackModal(feedback) {
                 // Show modal
-                this.userModal.style.display = 'flex';
+                this.feedbackModal.style.display = 'flex';
                 document.body.style.overflow = 'hidden';
                 
                 // Show loading initially
-                this.userModalLoading.style.display = 'block';
-                this.userModalContent.style.display = 'none';
-                this.userModalError.style.display = 'none';
+                this.feedbackModalLoading.style.display = 'block';
+                this.feedbackModalContent.style.display = 'none';
+                this.feedbackModalError.style.display = 'none';
                 
                 // Simulate loading delay
                 setTimeout(() => {
                     try {
-                        // Get role badge class
-                        const roleClass = `role-${user.role}`;
-                        const statusClass = `status-${user.status}`;
+                        let stars = '';
+                        for (let i = 1; i <= 5; i++) {
+                            stars += i <= feedback.rating ? '★' : '☆';
+                        }
                         
-                        // Create user details HTML
-                        const userHTML = `
-                            <div class="user-detail-grid">
-                                <div class="user-info-container">
-                                    <div class="user-info-avatar">
-                                        <div class="avatar-large">${user.initials}</div>
-                                        <div class="user-info-text">
-                                            <h3>${user.name}</h3>
-                                            <p>${user.email}</p>
-                                        </div>
+                        const statusClass = this.getStatusClass(feedback.status);
+                        
+                        const feedbackHTML = `
+                            <div class="feedback-detail-grid">
+                                <div class="detail-group">
+                                    <div class="detail-label">Feedback ID</div>
+                                    <div class="detail-value">#${feedback.id}</div>
+                                </div>
+                                
+                                <div class="detail-group">
+                                    <div class="detail-label">User</div>
+                                    <div class="detail-value">${this.escapeHtml(feedback.userName)}</div>
+                                    <div style="font-size:0.85rem;color:var(--text-light);margin-top:0.25rem;">
+                                        ${this.escapeHtml(feedback.userEmail)}
                                     </div>
                                 </div>
                                 
                                 <div class="detail-group">
-                                    <div class="detail-label">User ID</div>
-                                    <div class="detail-value">#${user.id}</div>
-                                </div>
-                                
-                                <div class="detail-group">
-                                    <div class="detail-label">Role</div>
-                                    <div class="detail-value">
-                                        <span class="role-badge ${roleClass}">
-                                            ${user.role.charAt(0).toUpperCase() + user.role.slice(1)}
-                                        </span>
+                                    <div class="detail-label">Rating</div>
+                                    <div class="detail-value" style="font-size:1.3rem;color:#fbbf24;">
+                                        ${stars} (${feedback.rating}/5)
                                     </div>
                                 </div>
                                 
@@ -2585,57 +2758,82 @@
                                     <div class="detail-label">Status</div>
                                     <div class="detail-value">
                                         <span class="status-badge ${statusClass}">
-                                            ${user.status.charAt(0).toUpperCase() + user.status.slice(1)}
+                                            ${feedback.status.charAt(0).toUpperCase() + feedback.status.slice(1)}
                                         </span>
                                     </div>
                                 </div>
                                 
                                 <div class="detail-group">
-                                    <div class="detail-label">Created Date</div>
-                                    <div class="detail-value">${user.created}</div>
+                                    <div class="detail-label">Submitted</div>
+                                    <div class="detail-value">${feedback.created}</div>
                                 </div>
                                 
-                                <div class="detail-group">
-                                    <div class="detail-label">Last Updated</div>
-                                    <div class="detail-value">${user.updated}</div>
-                                </div>
-                                
-                                <div class="detail-group">
-                                    <div class="detail-label">Last Login</div>
-                                    <div class="detail-value">${user.lastLogin}</div>
+                                <div class="feedback-message-container">
+                                    <div class="detail-label">Message</div>
+                                    <div class="feedback-message-box">
+                                        ${this.formatFeedbackMessage(feedback.message)}
+                                    </div>
                                 </div>
                             </div>
                         `;
                         
-                        // Update modal content
-                        this.userModalContent.innerHTML = userHTML;
+                        this.feedbackModalContent.innerHTML = feedbackHTML;
                         
-                        // Hide loading and show content
-                        this.userModalLoading.style.display = 'none';
-                        this.userModalContent.style.display = 'block';
+                        this.feedbackModalLoading.style.display = 'none';
+                        this.feedbackModalContent.style.display = 'block';
                     } catch (error) {
-                        console.error('Error loading user details:', error);
-                        this.userErrorMessage.textContent = 'Error loading user details. Please try again.';
-                        this.userModalLoading.style.display = 'none';
-                        this.userModalError.style.display = 'block';
+                        console.error('Error loading feedback details:', error);
+                        this.feedbackErrorMessage.textContent = 'Error loading feedback details. Please try again.';
+                        this.feedbackModalLoading.style.display = 'none';
+                        this.feedbackModalError.style.display = 'block';
                     }
                 }, 300);
             }
             
-            closeUserModal() {
-                this.userModal.style.display = 'none';
+            getStatusClass(status) {
+                switch(status) {
+                    case 'approved':
+                        return 'status-approved';
+                    case 'pending':
+                        return 'status-pending';
+                    case 'rejected':
+                        return 'status-rejected';
+                    default:
+                        return 'status-pending';
+                }
+            }
+            
+            formatFeedbackMessage(message) {
+                if (!message) return 'No message provided.';
+                return message
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#039;')
+                    .replace(/\n/g, '<br>');
+            }
+            
+            escapeHtml(text) {
+                if (!text) return '';
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+            
+            closeFeedbackModal() {
+                this.feedbackModal.style.display = 'none';
                 document.body.style.overflow = 'auto';
             }
             
             handleDeleteClick(button, index) {
-                const userId = button.getAttribute('data-user-id');
+                const feedbackId = button.getAttribute('data-feedback-id');
                 const userName = button.getAttribute('data-user-name');
                 
-                this.currentDeleteId = userId;
-                this.userNameText.textContent = userName;
+                this.currentDeleteId = feedbackId;
+                this.feedbackNameText.textContent = `User: ${userName} (ID: #${feedbackId})`;
                 this.currentDeleteForm = this.deleteForms[index];
                 
-                // Show the modal
                 this.deleteModal.style.display = 'flex';
                 document.body.style.overflow = 'hidden';
             }
@@ -2646,20 +2844,18 @@
                 this.currentDeleteId = null;
                 this.currentDeleteForm = null;
                 
-                // Reset confirm button
                 this.confirmDeleteBtn.classList.remove('loading');
                 this.confirmDeleteBtn.disabled = false;
                 this.confirmDeleteBtn.innerHTML = `
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>
-                    Yes, Delete User
+                    Yes, Delete Feedback
                 `;
             }
             
             confirmDelete() {
                 if (this.currentDeleteId && this.currentDeleteForm) {
-                    // Disable button and show loading state
                     this.confirmDeleteBtn.classList.add('loading');
                     this.confirmDeleteBtn.disabled = true;
                     this.confirmDeleteBtn.innerHTML = `
@@ -2669,7 +2865,6 @@
                         Deleting...
                     `;
                     
-                    // Submit the delete form
                     setTimeout(() => {
                         this.currentDeleteForm.submit();
                     }, 500);
@@ -2677,16 +2872,15 @@
             }
             
             setupSearch() {
-                if (this.searchInput && this.userRows.length > 0) {
+                if (this.searchInput && this.feedbackRows.length > 0) {
                     this.searchInput.addEventListener('input', (e) => {
                         const searchTerm = e.target.value.toLowerCase().trim();
                         
-                        this.userRows.forEach(row => {
+                        this.feedbackRows.forEach(row => {
                             const name = row.getAttribute('data-name');
-                            const email = row.getAttribute('data-email');
-                            const role = row.getAttribute('data-role');
+                            const message = row.getAttribute('data-message');
                             
-                            if (name.includes(searchTerm) || email.includes(searchTerm) || role.includes(searchTerm)) {
+                            if (name.includes(searchTerm) || message.includes(searchTerm)) {
                                 row.style.display = '';
                             } else {
                                 row.style.display = 'none';
@@ -2694,15 +2888,12 @@
                         });
                     });
                     
-                    // Add keyboard shortcut for search
                     document.addEventListener('keydown', (e) => {
-                        // Focus search input on Ctrl+K
                         if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
                             e.preventDefault();
                             this.searchInput.focus();
                         }
                         
-                        // Escape to clear search
                         if (e.key === 'Escape' && document.activeElement === this.searchInput) {
                             this.searchInput.value = '';
                             this.searchInput.dispatchEvent(new Event('input'));
@@ -2735,8 +2926,11 @@
                 // Initialize Navigation Manager
                 window.navigationManager = new NavigationManager();
                 
-                // Initialize User Manager
-                window.userManager = new UserManager();
+                // Initialize Stats Updater for live stats
+                window.statsUpdater = new StatsUpdater();
+                
+                // Initialize Feedback Manager
+                window.feedbackManager = new FeedbackManager();
                 
                 // Add spin animation for loading
                 const style = document.createElement('style');
@@ -2761,7 +2955,6 @@
                 
             } catch (error) {
                 console.error('Error initializing application:', error);
-                // Show error message to user
                 const mainContent = document.querySelector('.admin-main');
                 if (mainContent) {
                     const errorAlert = document.createElement('div');
@@ -2778,4 +2971,4 @@
         });
     </script>
 </body>
-</html><?php /**PATH C:\laragon\www\neo-faraid\resources\views/admin/users/index.blade.php ENDPATH**/ ?>
+</html><?php /**PATH C:\laragon\www\neo-faraid\resources\views/admin/feedback/index.blade.php ENDPATH**/ ?>

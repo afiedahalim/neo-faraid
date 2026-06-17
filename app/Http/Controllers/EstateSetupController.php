@@ -1675,27 +1675,297 @@ class EstateSetupController extends Controller
     }
 
     /**
-     * Edit estate (redirects to index).
+     * Show the form for editing the specified estate.
      *
      * @param  string  $uniqueId
-     * @return \Illuminate\Http\RedirectResponse
+     * @return \Illuminate\View\View
      */
     public function edit(string $uniqueId)
     {
-        return redirect()->route('estate-setup.index');
+        $estate = $this->getEstate($uniqueId);
+        $estate->load(['heirs', 'assets', 'debts', 'wasiyyah', 'digitalCredentials']);
+        $user = Auth::user();
+        return view('estate-setup.create', compact('estate', 'user'));
     }
 
     /**
-     * Update estate (redirects to index).
+     * Update the specified estate.
      *
      * @param  Request  $request
      * @param  string   $uniqueId
-     * @return \Illuminate\Http\RedirectResponse
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
      */
     public function update(Request $request, string $uniqueId)
     {
-        return redirect()->route('estate-setup.index')
-            ->with('info', 'Use the sections below to update your estate.');
+        $estate = $this->getEstate($uniqueId);
+
+        // Validate the request (same as store)
+        $validator = Validator::make($request->all(), [
+            'deceased_name' => 'nullable|string|max:255',
+            'deceased_nric' => 'nullable|string|max:20',
+            'date_of_birth' => 'nullable|date',
+            'gender' => 'nullable|in:male,female',
+            'contact_phone' => 'nullable|string|max:20',
+            'contact_email' => 'nullable|email|max:255',
+            'address' => 'nullable|string',
+            'trustee_name' => 'nullable|string|max:255',
+            'trustee_nric' => 'nullable|string|max:20',
+            'trustee_phone' => 'nullable|string|max:20',
+            'trustee_email' => 'nullable|email|max:255',
+            'wasiyyah_instructions' => 'nullable|string',
+            'assets_data' => 'nullable|json',
+            'debts_data' => 'nullable|json',
+            'heirs_data' => 'nullable|json',
+            'wasiyyah_data' => 'nullable|json',
+            'credentials_data' => 'nullable|json',
+            'will_video' => 'nullable|file|mimes:mp4,mov,avi,webm|max:524288000',
+            'youtube_url' => 'nullable|url|max:500',
+            'activate_after_save' => 'nullable|boolean',
+        ]);
+
+        if ($validator->fails()) {
+            if ($request->wantsJson()) {
+                return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+            }
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        // Auto-populate from user if not provided (same as store)
+        $user = Auth::user();
+        $deceasedName = $request->deceased_name ?: $user->name;
+        $deceasedNric = $request->deceased_nric ?: ($user->nric ?? null);
+        $dateOfBirth = $request->date_of_birth ?: ($user->date_of_birth ? $user->date_of_birth->format('Y-m-d') : null);
+        $gender = $request->gender ?: $user->gender;
+        $contactPhone = $request->contact_phone ?: ($user->contact_phone ?? null);
+        $contactEmail = $request->contact_email ?: $user->email;
+        $address = $request->address ?: ($user->address ?? null);
+
+        // Validate required fields (same as store)
+        if (empty($deceasedName)) {
+            $message = 'Deceased name is required.';
+            if ($request->wantsJson()) {
+                return response()->json(['success' => false, 'message' => $message], 422);
+            }
+            return redirect()->back()->with('error', $message)->withInput();
+        }
+
+        if ($deceasedNric && !$this->validateNRIC($deceasedNric)) {
+            $message = 'Invalid NRIC format. Use: 000000-00-0000 or 12 digits.';
+            if ($request->wantsJson()) {
+                return response()->json(['success' => false, 'message' => $message], 422);
+            }
+            return redirect()->back()->with('error', $message)->withInput();
+        }
+
+        if ($contactPhone && !$this->validatePhone($contactPhone)) {
+            $message = 'Invalid phone format. Use: 012-3456789';
+            if ($request->wantsJson()) {
+                return response()->json(['success' => false, 'message' => $message], 422);
+            }
+            return redirect()->back()->with('error', $message)->withInput();
+        }
+
+        if ($contactEmail && !$this->validateEmail($contactEmail)) {
+            $message = 'Invalid email format.';
+            if ($request->wantsJson()) {
+                return response()->json(['success' => false, 'message' => $message], 422);
+            }
+            return redirect()->back()->with('error', $message)->withInput();
+        }
+
+        if ($request->trustee_email && !$this->validateEmail($request->trustee_email)) {
+            $message = 'Invalid trustee email format.';
+            if ($request->wantsJson()) {
+                return response()->json(['success' => false, 'message' => $message], 422);
+            }
+            return redirect()->back()->with('error', $message)->withInput();
+        }
+
+        if ($request->trustee_phone && !$this->validatePhone($request->trustee_phone)) {
+            $message = 'Invalid trustee phone format. Use: 012-3456789';
+            if ($request->wantsJson()) {
+                return response()->json(['success' => false, 'message' => $message], 422);
+            }
+            return redirect()->back()->with('error', $message)->withInput();
+        }
+
+        if ($request->trustee_nric && !$this->validateNRIC($request->trustee_nric)) {
+            $message = 'Invalid trustee NRIC format.';
+            if ($request->wantsJson()) {
+                return response()->json(['success' => false, 'message' => $message], 422);
+            }
+            return redirect()->back()->with('error', $message)->withInput();
+        }
+
+        DB::beginTransaction();
+
+        try {
+            // Update main estate
+            $estate->update([
+                'deceased_name' => $deceasedName,
+                'deceased_nric' => $deceasedNric ? $this->formatNRIC($deceasedNric) : null,
+                'date_of_birth' => $dateOfBirth,
+                'gender' => $gender,
+                'contact_phone' => $contactPhone ? $this->formatPhone($contactPhone) : null,
+                'contact_email' => $contactEmail,
+                'address' => $address,
+                'trustee_name' => $request->trustee_name,
+                'trustee_nric' => $request->trustee_nric ? $this->formatNRIC($request->trustee_nric) : null,
+                'trustee_phone' => $request->trustee_phone ? $this->formatPhone($request->trustee_phone) : null,
+                'trustee_email' => $request->trustee_email,
+                'wasiyyah_instructions' => $request->wasiyyah_instructions,
+            ]);
+
+            // Delete old related data (we'll replace them)
+            $estate->assets()->delete();
+            $estate->debts()->delete();
+            $estate->heirs()->delete();
+            $estate->wasiyyah()->delete();
+            $estate->digitalCredentials()->delete();
+
+            // Recreate assets
+            if ($request->assets_data) {
+                $assets = json_decode($request->assets_data, true);
+                if (is_array($assets)) {
+                    foreach ($assets as $asset) {
+                        $estate->assets()->create([
+                            'name' => $asset['name'] ?? 'Unknown Asset',
+                            'type' => $asset['category'] ?? 'other',
+                            'category' => $asset['label'] ?? 'Other Asset',
+                            'value' => $asset['value'] ?? 0,
+                            'description' => $asset['description'] ?? null,
+                            'location' => $asset['description'] ?? null,
+                            'ownership_percentage' => $asset['ownership'] ?? 100,
+                        ]);
+                    }
+                }
+            }
+
+            // Recreate debts
+            if ($request->debts_data) {
+                $debts = json_decode($request->debts_data, true);
+                if (is_array($debts)) {
+                    foreach ($debts as $debt) {
+                        $estate->debts()->create([
+                            'creditor_name' => $debt['creditor_name'] ?? $debt['name'] ?? 'Unknown Creditor',
+                            'amount' => $debt['amount'] ?? 0,
+                            'description' => $debt['description'] ?? null,
+                            'type' => $debt['type'] ?? 'unsecured',
+                            'due_date' => $debt['due_date'] ?? null,
+                            'debt_type' => $debt['debt_type'] ?? null,
+                            'creditor_contact' => $debt['creditor_contact'] ?? null,
+                        ]);
+                    }
+                }
+            }
+
+            // Recreate heirs
+            if ($request->heirs_data) {
+                $heirs = json_decode($request->heirs_data, true);
+                if (is_array($heirs)) {
+                    foreach ($heirs as $heir) {
+                        $estate->heirs()->create([
+                            'name' => $heir['name'] ?? 'Unknown Heir',
+                            'nric' => isset($heir['nric']) ? $this->formatNRIC($heir['nric']) : null,
+                            'email' => $heir['email'] ?? null,
+                            'relationship' => $heir['relationship'] ?? 'other',
+                            'relationship_type' => $this->getRelationshipType($heir['relationship'] ?? 'other'),
+                            'phone' => isset($heir['phone']) ? $this->formatPhone($heir['phone']) : null,
+                            'share_percentage' => $heir['share_percentage'] ?? $heir['percentage'] ?? 0,
+                        ]);
+                    }
+                }
+            }
+
+            // Recreate wasiyyah
+            if ($request->wasiyyah_data) {
+                $wasiyyahList = json_decode($request->wasiyyah_data, true);
+                if (is_array($wasiyyahList)) {
+                    foreach ($wasiyyahList as $wasiyyah) {
+                        $estate->wasiyyah()->create([
+                            'beneficiary_name' => $wasiyyah['beneficiary_name'] ?? $wasiyyah['name'] ?? 'Unknown Beneficiary',
+                            'beneficiary_nric' => isset($wasiyyah['beneficiary_nric']) ? $this->formatNRIC($wasiyyah['beneficiary_nric']) : (isset($wasiyyah['nric']) ? $this->formatNRIC($wasiyyah['nric']) : null),
+                            'beneficiary_email' => $wasiyyah['beneficiary_email'] ?? $wasiyyah['email'] ?? null,
+                            'relationship' => $wasiyyah['relationship'] ?? 'other',
+                            'requested_percentage' => $wasiyyah['requested_percentage'] ?? $wasiyyah['percentage'] ?? 0,
+                            'description' => $wasiyyah['description'] ?? $wasiyyah['notes'] ?? null,
+                        ]);
+                    }
+                }
+            }
+
+            // Recreate digital credentials
+            if ($request->credentials_data) {
+                $credentials = json_decode($request->credentials_data, true);
+                if (is_array($credentials)) {
+                    foreach ($credentials as $credential) {
+                        DigitalCredential::create([
+                            'estate_pre_registration_id' => $estate->id,
+                            'platform' => $credential['platform'] ?? 'Unknown',
+                            'username' => $credential['username'] ?? '',
+                            'encrypted_password' => isset($credential['password']) ? encrypt($credential['password']) : encrypt(''),
+                            'security_questions' => $credential['security_questions'] ?? $credential['security'] ?? null,
+                            'notes' => $credential['notes'] ?? null,
+                        ]);
+                    }
+                }
+            }
+
+            // Process Will Video upload
+            if ($request->hasFile('will_video')) {
+                // Delete old file if exists
+                if ($estate->will_video_url && !Str::contains($estate->will_video_url, 'youtube')) {
+                    $oldPath = str_replace('/storage/', '', $estate->will_video_url);
+                    if (Storage::disk('public')->exists($oldPath)) {
+                        Storage::disk('public')->delete($oldPath);
+                    }
+                }
+                $file = $request->file('will_video');
+                $filename = 'will_video_' . $estate->unique_id . '_' . time() . '.' . $file->getClientOriginalExtension();
+                $path = $file->storeAs('will-videos', $filename, 'public');
+                $estate->will_video_url = Storage::url($path);
+                $estate->will_video_type = 'upload';
+                $estate->save();
+            }
+
+            // Process YouTube URL
+            if ($request->youtube_url) {
+                $estate->will_video_url = $request->youtube_url;
+                $estate->will_video_type = 'youtube';
+                $estate->save();
+            }
+
+            // Process Will Text Content
+            if ($request->will_text_content) {
+                $estate->will_text_content = $request->will_text_content;
+                $estate->save();
+            }
+
+            DB::commit();
+
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'redirect' => route('estate-setup.index'),
+                    'message' => 'Estate plan updated successfully.',
+                ]);
+            }
+
+            return redirect()->route('estate-setup.index')->with('success', 'Estate plan updated successfully.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Failed to update estate: ' . $e->getMessage(), [
+                'estate_id' => $estate->id,
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json(['success' => false, 'message' => 'Failed to update estate: ' . $e->getMessage()], 500);
+            }
+
+            return redirect()->back()->with('error', 'Failed to update estate. Please try again.')->withInput();
+        }
     }
 
     /**

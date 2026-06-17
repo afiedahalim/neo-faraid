@@ -1,8 +1,8 @@
-@extends('layouts.app')
 
-@section('title', 'Create Estate Planning')
 
-@php
+<?php $__env->startSection('title', 'Create Estate Planning'); ?>
+
+<?php
     // ===== MEMORY SAFETY =====
     ini_set('memory_limit', '512M');
     ini_set('max_execution_time', 300);
@@ -92,15 +92,15 @@
         preg_match('/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&?]+)/', $url, $matches);
         return $matches[1] ?? null;
     }
-@endphp
+?>
 
-@section('title', $pageTitle)
+<?php $__env->startSection('title', $pageTitle); ?>
 
-@if(!Auth::check())
-    <script>window.location.href = "{{ route('login') }}";</script>
-@endif
+<?php if(!Auth::check()): ?>
+    <script>window.location.href = "<?php echo e(route('login')); ?>";</script>
+<?php endif; ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -1656,10 +1656,11 @@
             </div>
         </div>
         <h1 class="hero-title">
-            <span class="hero-highlight">{{ $isEditing ? 'Edit' : 'Create' }}</span> Estate Planning
+            <span class="hero-highlight"><?php echo e($isEditing ? 'Edit' : 'Create'); ?></span> Estate Planning
         </h1>
         <p class="hero-subtitle">
-            {{ $isEditing ? 'Update your digital estate planning details.' : 'Begin your digital estate planning journey. Your information is secure and will only be accessible to your designated heirs.' }}
+            <?php echo e($isEditing ? 'Update your digital estate planning details.' : 'Begin your digital estate planning journey. Your information is secure and will only be accessible to your designated heirs.'); ?>
+
         </p>
     </div>
 </header>
@@ -1733,9 +1734,9 @@
         </button>
     </div>
 
-    <form method="POST" action="{{ $actionRoute }}" id="estateForm" enctype="multipart/form-data">
-        @csrf
-        @if($isEditing) @method('PUT') @endif
+    <form method="POST" action="<?php echo e($actionRoute); ?>" id="estateForm" enctype="multipart/form-data">
+        <?php echo csrf_field(); ?>
+        <?php if($isEditing): ?> <?php echo method_field('PUT'); ?> <?php endif; ?>
 
         <!-- SECTION 1: PROFILE & CREDENTIALS -->
         <div class="glass-card active-section" id="profileSection">
@@ -1760,7 +1761,7 @@
                     <div class="form-group">
                         <label for="deceased_name" class="form-label required-label">Full Name</label>
                         <input type="text" class="form-control" id="deceased_name" name="deceased_name" 
-                               value="{{ old('deceased_name', $isEditing ? $estate->deceased_name : $user->name) }}" 
+                               value="<?php echo e(old('deceased_name', $isEditing ? $estate->deceased_name : $user->name)); ?>" 
                                placeholder="Enter your full name as per IC/Passport" required readonly 
                                style="background-color: #f0f0f0; cursor: not-allowed;">
                         <div class="error-message" id="nameError"></div>
@@ -1770,7 +1771,7 @@
                     <div class="form-group">
                         <label for="deceased_nric" class="form-label required-label">NRIC/Passport Number</label>
                         <input type="text" class="form-control" id="deceased_nric" name="deceased_nric" 
-                               value="{{ old('deceased_nric', $isEditing ? $estate->deceased_nric : ($user->formatted_nric ?? $user->nric)) }}" 
+                               value="<?php echo e(old('deceased_nric', $isEditing ? $estate->deceased_nric : ($user->formatted_nric ?? $user->nric))); ?>" 
                                placeholder="000000-00-0000" required readonly 
                                style="background-color: #f0f0f0; cursor: not-allowed;"
                                pattern="^\d{6}-\d{2}-\d{4}$|\d{12}$">
@@ -1781,7 +1782,7 @@
                     <div class="form-group">
                         <label for="date_of_birth" class="form-label required-label">Date of Birth</label>
                         <input type="date" id="date_of_birth" name="date_of_birth" class="form-control" 
-                               value="{{ old('date_of_birth', $isEditing ? ($estate->date_of_birth ? $estate->date_of_birth->format('Y-m-d') : '') : ($user->date_of_birth ? $user->date_of_birth->format('Y-m-d') : '')) }}" 
+                               value="<?php echo e(old('date_of_birth', $isEditing ? ($estate->date_of_birth ? $estate->date_of_birth->format('Y-m-d') : '') : ($user->date_of_birth ? $user->date_of_birth->format('Y-m-d') : ''))); ?>" 
                                readonly style="background-color: #f0f0f0; cursor: not-allowed;">
                         <div class="error-message" id="dobError"></div>
                         <small style="color: var(--gray-500);">This information is from your registration and cannot be changed.</small>
@@ -1791,18 +1792,18 @@
                         <label for="gender" class="form-label required-label">Gender</label>
                         <select class="form-control" id="gender" name="gender" disabled style="background-color: #f0f0f0; cursor: not-allowed;">
                             <option value="">Select Gender</option>
-                            <option value="male" {{ old('gender', $isEditing ? $estate->gender : $user->gender) == 'male' ? 'selected' : '' }}>Male</option>
-                            <option value="female" {{ old('gender', $isEditing ? $estate->gender : $user->gender) == 'female' ? 'selected' : '' }}>Female</option>
+                            <option value="male" <?php echo e(old('gender', $isEditing ? $estate->gender : $user->gender) == 'male' ? 'selected' : ''); ?>>Male</option>
+                            <option value="female" <?php echo e(old('gender', $isEditing ? $estate->gender : $user->gender) == 'female' ? 'selected' : ''); ?>>Female</option>
                         </select>
                         <div class="error-message" id="genderError"></div>
-                        <input type="hidden" name="gender" value="{{ $isEditing ? $estate->gender : $user->gender }}">
+                        <input type="hidden" name="gender" value="<?php echo e($isEditing ? $estate->gender : $user->gender); ?>">
                         <small style="color: var(--gray-500);">This information is from your registration and cannot be changed.</small>
                     </div>
 
                     <div class="form-group">
                         <label for="contact_phone" class="form-label required-label">Contact Phone</label>
                         <input type="tel" class="form-control" id="contact_phone" name="contact_phone" 
-                               value="{{ old('contact_phone', $isEditing ? $estate->contact_phone : ($user->formatted_contact_phone ?? $user->contact_phone)) }}" 
+                               value="<?php echo e(old('contact_phone', $isEditing ? $estate->contact_phone : ($user->formatted_contact_phone ?? $user->contact_phone))); ?>" 
                                placeholder="012-3456789" required
                                pattern="^01\d-\d{7,8}$|^01\d{8,9}$">
                         <div class="error-message" id="phoneError"></div>
@@ -1812,7 +1813,7 @@
                     <div class="form-group">
                         <label for="contact_email" class="form-label required-label">Contact Email</label>
                         <input type="email" class="form-control" id="contact_email" name="contact_email" 
-                               value="{{ old('contact_email', $isEditing ? $estate->contact_email : $user->email) }}" 
+                               value="<?php echo e(old('contact_email', $isEditing ? $estate->contact_email : $user->email)); ?>" 
                                placeholder="your@email.com" required readonly 
                                style="background-color: #f0f0f0; cursor: not-allowed;">
                         <div class="error-message" id="emailError"></div>
@@ -1822,7 +1823,7 @@
                     <div class="form-group" style="grid-column: span 2;">
                         <label for="address" class="form-label required-label">Residential Address</label>
                         <textarea class="form-control" id="address" name="address" rows="3" 
-                                  placeholder="Enter your full residential address" required>{{ old('address', $isEditing ? $estate->address : $user->address) }}</textarea>
+                                  placeholder="Enter your full residential address" required><?php echo e(old('address', $isEditing ? $estate->address : $user->address)); ?></textarea>
                         <div class="error-message" id="addressError"></div>
                         <small style="color: var(--gray-500);">You can update your residential address if needed.</small>
                     </div>
@@ -1968,7 +1969,7 @@
                 </div>
 
                 <div class="btn-group">
-                    <a href="{{ route('estate-setup.index') }}" class="btn btn-secondary">Cancel</a>
+                    <a href="<?php echo e(route('estate-setup.index')); ?>" class="btn btn-secondary">Cancel</a>
                     <button type="button" class="btn btn-primary next-section" data-next="assets">Save & Continue →</button>
                 </div>
             </div>
@@ -2429,28 +2430,28 @@
                     <div class="form-group">
                         <label for="trustee_name" class="form-label required-label">Trustee Full Name</label>
                         <input type="text" class="form-control" id="trustee_name" name="trustee_name" 
-                               value="{{ old('trustee_name', $isEditing ? $estate->trustee_name : '') }}" 
+                               value="<?php echo e(old('trustee_name', $isEditing ? $estate->trustee_name : '')); ?>" 
                                placeholder="Enter trustee's full name" required>
                         <div class="error-message" id="trusteeNameError"></div>
                     </div>
                     <div class="form-group">
                         <label for="trustee_nric" class="form-label required-label">Trustee NRIC/Passport</label>
                         <input type="text" class="form-control" id="trustee_nric" name="trustee_nric" 
-                               value="{{ old('trustee_nric', $isEditing ? $estate->trustee_nric : '') }}" 
+                               value="<?php echo e(old('trustee_nric', $isEditing ? $estate->trustee_nric : '')); ?>" 
                                placeholder="000000-00-0000" required pattern="^\d{6}-\d{2}-\d{4}$|\d{12}$" oninput="this.value = formatNric(this.value)">
                         <div class="error-message" id="trusteeNricError"></div>
                     </div>
                     <div class="form-group">
                         <label for="trustee_phone" class="form-label required-label">Trustee Contact Phone</label>
                         <input type="tel" class="form-control" id="trustee_phone" name="trustee_phone" 
-                               value="{{ old('trustee_phone', $isEditing ? $estate->trustee_phone : '') }}" 
+                               value="<?php echo e(old('trustee_phone', $isEditing ? $estate->trustee_phone : '')); ?>" 
                                placeholder="012-3456789" required pattern="^01\d-\d{7,8}$|^01\d{8,9}$" oninput="this.value = formatPhone(this.value)">
                         <div class="error-message" id="trusteePhoneError"></div>
                     </div>
                     <div class="form-group">
                         <label for="trustee_email" class="form-label required-label">Trustee Email</label>
                         <input type="email" class="form-control" id="trustee_email" name="trustee_email" 
-                               value="{{ old('trustee_email', $isEditing ? $estate->trustee_email : '') }}" 
+                               value="<?php echo e(old('trustee_email', $isEditing ? $estate->trustee_email : '')); ?>" 
                                placeholder="trustee@email.com" required>
                         <div class="error-message" id="trusteeEmailError"></div>
                         <small style="color: var(--gray-500);">Required for notification</small>
@@ -2546,13 +2547,13 @@
 
                 <!-- Upload Video Option -->
                 <div class="video-option-content active" id="uploadVideoOption">
-                    @if($isEditing && $estate->will_video_type === 'upload' && $estate->will_video_url)
+                    <?php if($isEditing && $estate->will_video_type === 'upload' && $estate->will_video_url): ?>
                         <div class="video-preview" id="videoPreview" style="display: block;">
-                            <video id="videoPlayer" controls src="{{ $estate->will_video_url }}"></video>
+                            <video id="videoPlayer" controls src="<?php echo e($estate->will_video_url); ?>"></video>
                             <button type="button" class="btn btn-secondary btn-sm" id="removeVideoBtn" style="margin-top: 0.5rem;">Remove Video</button>
                         </div>
                         <div class="video-upload-area" id="videoUploadArea" style="display: none;"></div>
-                    @else
+                    <?php else: ?>
                         <div class="video-upload-area" id="videoUploadArea">
                             <svg width="48" height="48" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin: 0 auto 1rem; color: var(--primary-color);">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
@@ -2565,7 +2566,7 @@
                             <video id="videoPlayer" controls></video>
                             <button type="button" class="btn btn-secondary btn-sm" id="removeVideoBtn" style="margin-top: 0.5rem;">Remove Video</button>
                         </div>
-                    @endif
+                    <?php endif; ?>
                 </div>
 
                 <!-- YouTube Link Option -->
@@ -2573,23 +2574,23 @@
                     <div class="youtube-url-input">
                         <label class="form-label">YouTube Video URL</label>
                         <input type="url" id="youtube_url" name="youtube_url" class="form-control" 
-                               value="{{ $isEditing && $estate->will_video_type === 'youtube' ? $estate->will_video_url : '' }}" 
+                               value="<?php echo e($isEditing && $estate->will_video_type === 'youtube' ? $estate->will_video_url : ''); ?>" 
                                placeholder="https://www.youtube.com/watch?v=... or https://youtu.be/...">
                         <small style="color: var(--gray-500);">Enter a valid YouTube video link (unlisted or public). The video will be embedded for heirs to view.</small>
                     </div>
                     <div class="youtube-preview" id="youtubePreview">
                         <div style="margin-bottom: 0.5rem;"><strong>Preview:</strong></div>
-                        @if($isEditing && $estate->will_video_type === 'youtube' && $estate->will_video_url)
-                            @php $embedSrc = 'https://www.youtube.com/embed/' . extractYouTubeId($estate->will_video_url); @endphp
-                            <iframe id="youtubeIframe" src="{{ $embedSrc }}" frameborder="0" allowfullscreen></iframe>
-                        @else
+                        <?php if($isEditing && $estate->will_video_type === 'youtube' && $estate->will_video_url): ?>
+                            <?php $embedSrc = 'https://www.youtube.com/embed/' . extractYouTubeId($estate->will_video_url); ?>
+                            <iframe id="youtubeIframe" src="<?php echo e($embedSrc); ?>" frameborder="0" allowfullscreen></iframe>
+                        <?php else: ?>
                             <iframe id="youtubeIframe" src="" frameborder="0" allowfullscreen></iframe>
-                        @endif
+                        <?php endif; ?>
                         <button type="button" class="btn btn-secondary btn-sm" id="removeYoutubeBtn" style="margin-top: 0.5rem; display: none;">Remove YouTube Link</button>
                     </div>
                 </div>
 
-                <input type="hidden" id="video_option" name="video_option" value="{{ $isEditing ? $estate->will_video_type : 'none' }}">
+                <input type="hidden" id="video_option" name="video_option" value="<?php echo e($isEditing ? $estate->will_video_type : 'none'); ?>">
                 <input type="hidden" id="will_video_url" name="will_video_url">
 
                 <div class="btn-group">
@@ -2859,14 +2860,14 @@
     }
 
     // ===== GLOBAL STATE (pre‑populated from server) =====
-    let heirs = @json($heirs);
-    let assets = @json($assets);
-    let debts = @json($debts);
-    let credentials = @json($credentials);
-    let wasiyyah = @json($wasiyyah);
+    let heirs = <?php echo json_encode($heirs, 15, 512) ?>;
+    let assets = <?php echo json_encode($assets, 15, 512) ?>;
+    let debts = <?php echo json_encode($debts, 15, 512) ?>;
+    let credentials = <?php echo json_encode($credentials, 15, 512) ?>;
+    let wasiyyah = <?php echo json_encode($wasiyyah, 15, 512) ?>;
     let videoFile = null;
-    let youtubeUrl = '{{ $isEditing && $estate->will_video_type === 'youtube' ? $estate->will_video_url : '' }}';
-    let currentVideoOption = '{{ $isEditing && $estate->will_video_url ? $estate->will_video_type : 'none' }}';
+    let youtubeUrl = '<?php echo e($isEditing && $estate->will_video_type === 'youtube' ? $estate->will_video_url : ''); ?>';
+    let currentVideoOption = '<?php echo e($isEditing && $estate->will_video_url ? $estate->will_video_type : 'none'); ?>';
     let nextHeirId = heirs.length ? Math.max(...heirs.map(h => h.id)) + 1 : 1;
     let nextAssetId = assets.length ? Math.max(...assets.map(a => a.id)) + 1 : 1;
     let nextDebtId = debts.length ? Math.max(...debts.map(d => d.id)) + 1 : 1;
@@ -4084,7 +4085,7 @@
                 hideLoading();
                 if (data.success) {
                     ModernAlert.success(data.message || 'Estate plan activated successfully!', 'Success');
-                    setTimeout(() => window.location.href = data.redirect || '{{ route("estate-setup.index") }}', 1500);
+                    setTimeout(() => window.location.href = data.redirect || '<?php echo e(route("estate-setup.index")); ?>', 1500);
                 } else {
                     ModernAlert.error(data.message || 'Failed to activate estate plan. Please try again.', 'Activation Failed');
                 }
@@ -4267,4 +4268,5 @@
 
 })();
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\laragon\www\neo-faraid\resources\views/estate-setup/create.blade.php ENDPATH**/ ?>

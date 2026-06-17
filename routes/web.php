@@ -135,7 +135,7 @@ Route::get('/test-ocr-simple', function () {
 
     if ($tesseractExists && $foundPath) {
         $shortPath = str_replace('Program Files', 'PROGRA~1', $foundPath);
-        $shortPath = str_replace('Program Files (x86)', 'PROGRA~2', $shortPath);
+        $shortPath = str_replace('Program Files (x86)', 'PROGRA~2', $foundPath);
         $cmd = '"' . $shortPath . '" --version 2>&1';
         $output = shell_exec($cmd);
         $results['tesseract_version'] = $output ? explode("\n", $output)[0] : 'Failed to run';
@@ -171,7 +171,7 @@ Route::get('/test-ocr-simple', function () {
 
             if ($tesseractExists && $foundPath) {
                 $shortPath = str_replace('Program Files', 'PROGRA~1', $foundPath);
-                $shortPath = str_replace('Program Files (x86)', 'PROGRA~2', $shortPath);
+                $shortPath = str_replace('Program Files (x86)', 'PROGRA~2', $foundPath);
                 $cmd = '"' . $shortPath . '" "' . $testImage . '" stdout -l msa+eng --psm 6 2>&1';
                 $ocrResult = shell_exec($cmd);
                 $results['ocr_test_run'] = 'Completed';

@@ -1,8 +1,8 @@
-@extends('layouts.app')
 
-@section('title', 'Estate Planning')
 
-@section('content')
+<?php $__env->startSection('title', 'Estate Planning'); ?>
+
+<?php $__env->startSection('content'); ?>
 <!-- Poppins Font -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -927,62 +927,62 @@
 </header>
 
 <div class="glass-container">
-    @if(session('success'))
+    <?php if(session('success')): ?>
         <div class="modern-alert success show" style="margin-bottom: 1rem; transform: none; opacity: 1;">
             <svg class="alert-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
             <div class="alert-content">
                 <div class="alert-title">Success</div>
-                <div class="alert-message">{{ session('success') }}</div>
+                <div class="alert-message"><?php echo e(session('success')); ?></div>
             </div>
             <button class="alert-close" onclick="this.parentElement.remove()">✕</button>
         </div>
-    @endif
-    @if(session('error'))
+    <?php endif; ?>
+    <?php if(session('error')): ?>
         <div class="modern-alert error show" style="margin-bottom: 1rem; transform: none; opacity: 1;">
             <svg class="alert-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
             <div class="alert-content">
                 <div class="alert-title">Error</div>
-                <div class="alert-message">{{ session('error') }}</div>
+                <div class="alert-message"><?php echo e(session('error')); ?></div>
             </div>
             <button class="alert-close" onclick="this.parentElement.remove()">✕</button>
         </div>
-    @endif
-    @if(session('info'))
+    <?php endif; ?>
+    <?php if(session('info')): ?>
         <div class="modern-alert info show" style="margin-bottom: 1rem; transform: none; opacity: 1;">
             <svg class="alert-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
             <div class="alert-content">
                 <div class="alert-title">Information</div>
-                <div class="alert-message">{{ session('info') }}</div>
+                <div class="alert-message"><?php echo e(session('info')); ?></div>
             </div>
             <button class="alert-close" onclick="this.parentElement.remove()">✕</button>
         </div>
-    @endif
+    <?php endif; ?>
 
-    @php
+    <?php
         $userEstates = \App\Models\EstatePreRegistration::where('user_id', Auth::id())
             ->with(['heirs', 'assets', 'debts', 'wasiyyah'])
             ->orderBy('created_at', 'desc')
             ->get();
-    @endphp
+    ?>
 
-    @if($userEstates->isEmpty())
+    <?php if($userEstates->isEmpty()): ?>
         <div class="empty-state">
             <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
                 <path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
             </svg>
             <h3>No Estate Plans Yet</h3>
             <p>Start your digital estate planning journey today.</p>
-            <a href="{{ route('estate-setup.create') }}" class="btn btn-primary">Create Your First Estate Plan</a>
+            <a href="<?php echo e(route('estate-setup.create')); ?>" class="btn btn-primary">Create Your First Estate Plan</a>
         </div>
-    @else
-        @foreach($userEstates as $estate)
-            @php
+    <?php else: ?>
+        <?php $__currentLoopData = $userEstates; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $estate): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <?php
                 $totalAssets = $estate->assets->sum('value') ?? 0;
                 $totalDebts = $estate->debts->sum('amount') ?? 0;
                 $netEstate = max(0, $totalAssets - $totalDebts);
@@ -998,64 +998,65 @@
                 };
                 $statusLabel = ucfirst($estate->status);
                 $canActivate = $estate->status === 'draft' && $heirsCount > 0 && $assetsCount > 0 && $netEstate > 0;
-            @endphp
-            <div class="estate-card" data-id="{{ $estate->unique_id }}">
+            ?>
+            <div class="estate-card" data-id="<?php echo e($estate->unique_id); ?>">
                 <div class="estate-card-header">
                     <div class="estate-title">
-                        <h2>{{ $estate->deceased_name ?? 'Unnamed Estate' }}</h2>
-                        <span class="estate-status {{ $statusClass }}">{{ $statusLabel }}</span>
+                        <h2><?php echo e($estate->deceased_name ?? 'Unnamed Estate'); ?></h2>
+                        <span class="estate-status <?php echo e($statusClass); ?>"><?php echo e($statusLabel); ?></span>
                     </div>
                     <div class="estate-meta">
-                        Created: {{ $estate->created_at->format('d M Y') }}
-                        @if($estate->activated_at) | Activated: {{ $estate->activated_at->format('d M Y') }} @endif
+                        Created: <?php echo e($estate->created_at->format('d M Y')); ?>
+
+                        <?php if($estate->activated_at): ?> | Activated: <?php echo e($estate->activated_at->format('d M Y')); ?> <?php endif; ?>
                     </div>
                 </div>
                 <div class="estate-card-body">
                     <div class="summary-grid">
                         <div class="stat-card">
-                            <div class="stat-number">{{ $heirsCount }}</div>
+                            <div class="stat-number"><?php echo e($heirsCount); ?></div>
                             <div class="stat-label">Heirs</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-number">{{ $assetsCount }}</div>
+                            <div class="stat-number"><?php echo e($assetsCount); ?></div>
                             <div class="stat-label">Assets</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-number">{{ $debtsCount }}</div>
+                            <div class="stat-number"><?php echo e($debtsCount); ?></div>
                             <div class="stat-label">Debts</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-number">{{ $wasiyyahCount }}</div>
+                            <div class="stat-number"><?php echo e($wasiyyahCount); ?></div>
                             <div class="stat-label">Wasiyyah</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-number">RM {{ number_format($netEstate, 2) }}</div>
+                            <div class="stat-number">RM <?php echo e(number_format($netEstate, 2)); ?></div>
                             <div class="stat-label">Net Estate</div>
                         </div>
                     </div>
 
                     <div class="info-row">
                         <span class="info-label">NRIC:</span>
-                        <span>{{ $estate->deceased_nric ?? 'Not provided' }}</span>
+                        <span><?php echo e($estate->deceased_nric ?? 'Not provided'); ?></span>
                     </div>
                     <div class="info-row">
                         <span class="info-label">Trustee:</span>
-                        <span>{{ $estate->trustee_name ?? 'Not appointed' }}</span>
+                        <span><?php echo e($estate->trustee_name ?? 'Not appointed'); ?></span>
                     </div>
-                    @if($estate->status === 'activated')
+                    <?php if($estate->status === 'activated'): ?>
                         <div class="info-row">
                             <span class="info-label">Access Token:</span>
-                            <span><code>{{ $estate->access_token }}</code></span>
+                            <span><code><?php echo e($estate->access_token); ?></code></span>
                         </div>
                         <div class="info-row">
                             <span class="info-label">Token Expires:</span>
-                            <span>{{ $estate->token_expires_at ? $estate->token_expires_at->format('d M Y') : 'Never' }}</span>
+                            <span><?php echo e($estate->token_expires_at ? $estate->token_expires_at->format('d M Y') : 'Never'); ?></span>
                         </div>
-                    @endif
+                    <?php endif; ?>
 
                     <div class="btn-group">
                         <!-- Download PDF - always available -->
-                        <button class="btn btn-pdf" onclick="downloadEstatePDF('{{ $estate->unique_id }}')">
+                        <button class="btn btn-pdf" onclick="downloadEstatePDF('<?php echo e($estate->unique_id); ?>')">
                             <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                             </svg>
@@ -1063,36 +1064,36 @@
                         </button>
 
                         <!-- Edit Plan - uses the correct route -->
-                        <a href="{{ route('estate-setup.edit', $estate->unique_id) }}" class="btn btn-primary">
+                        <a href="<?php echo e(route('estate-setup.edit', $estate->unique_id)); ?>" class="btn btn-primary">
                             <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
                             </svg>
                             Edit Plan
                         </a>
 
-                        @if($estate->status === 'draft')
-                            @if($canActivate)
-                                <button class="btn btn-success activate-btn" data-id="{{ $estate->unique_id }}">
+                        <?php if($estate->status === 'draft'): ?>
+                            <?php if($canActivate): ?>
+                                <button class="btn btn-success activate-btn" data-id="<?php echo e($estate->unique_id); ?>">
                                     <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                     </svg>
                                     Activate Plan
                                 </button>
-                            @else
+                            <?php else: ?>
                                 <button class="btn btn-outline" disabled style="opacity:0.5;">
                                     ⚠️ Cannot Activate (Missing Heirs/Assets or Negative Net)
                                 </button>
-                            @endif
-                        @elseif($estate->status === 'activated')
-                            <button class="btn btn-warning deactivate-btn" data-id="{{ $estate->unique_id }}">
+                            <?php endif; ?>
+                        <?php elseif($estate->status === 'activated'): ?>
+                            <button class="btn btn-warning deactivate-btn" data-id="<?php echo e($estate->unique_id); ?>">
                                 <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
                                 </svg>
                                 Deactivate
                             </button>
-                        @endif
+                        <?php endif; ?>
 
-                        <button class="btn btn-danger delete-btn" data-id="{{ $estate->unique_id }}" data-name="{{ $estate->deceased_name }}">
+                        <button class="btn btn-danger delete-btn" data-id="<?php echo e($estate->unique_id); ?>" data-name="<?php echo e($estate->deceased_name); ?>">
                             <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                             </svg>
@@ -1102,150 +1103,151 @@
                 </div>
             </div>
 
-            {{-- HIDDEN PDF CONTENT FOR THIS ESTATE --}}
-            <div id="pdfContent-{{ $estate->unique_id }}" class="pdf-hidden-content">
+            
+            <div id="pdfContent-<?php echo e($estate->unique_id); ?>" class="pdf-hidden-content">
                 <div style="padding:20px;font-family:'Poppins',sans-serif;max-width:800px;margin:0 auto;">
                     <div style="text-align:center;margin-bottom:20px;border-bottom:2px solid #1a5fb4;padding-bottom:15px;">
                         <h1 style="color:#1a5fb4;font-size:22px;margin:0 0 5px 0;">Estate Distribution Statement</h1>
                         <p style="color:#64748b;font-size:12px;margin:0;">
-                            Reference: {{ $estate->unique_id }} | Status: {{ ucfirst($estate->status) }} | Generated: {{ now()->format('d M Y') }}
+                            Reference: <?php echo e($estate->unique_id); ?> | Status: <?php echo e(ucfirst($estate->status)); ?> | Generated: <?php echo e(now()->format('d M Y')); ?>
+
                         </p>
                     </div>
 
                     <!-- Deceased Information -->
                     <div class="pdf-section-title">Deceased Information</div>
                     <table class="pdf-info-table">
-                        <tr><td><strong>Name</strong></td><td>{{ $estate->deceased_name ?? 'N/A' }}</td></tr>
-                        <tr><td><strong>NRIC/Passport</strong></td><td>{{ $estate->deceased_nric ?? 'N/A' }}</td></tr>
-                        <tr><td><strong>Gender</strong></td><td>{{ ucfirst($estate->gender ?? 'N/A') }}</td></tr>
-                        <tr><td><strong>Date of Birth</strong></td><td>{{ $estate->date_of_birth ? $estate->date_of_birth->format('d F Y') : 'N/A' }}</td></tr>
-                        <tr><td><strong>Address</strong></td><td>{{ $estate->address ?? 'N/A' }}</td></tr>
+                        <tr><td><strong>Name</strong></td><td><?php echo e($estate->deceased_name ?? 'N/A'); ?></td></tr>
+                        <tr><td><strong>NRIC/Passport</strong></td><td><?php echo e($estate->deceased_nric ?? 'N/A'); ?></td></tr>
+                        <tr><td><strong>Gender</strong></td><td><?php echo e(ucfirst($estate->gender ?? 'N/A')); ?></td></tr>
+                        <tr><td><strong>Date of Birth</strong></td><td><?php echo e($estate->date_of_birth ? $estate->date_of_birth->format('d F Y') : 'N/A'); ?></td></tr>
+                        <tr><td><strong>Address</strong></td><td><?php echo e($estate->address ?? 'N/A'); ?></td></tr>
                     </table>
 
                     <!-- Financial Summary -->
                     <div class="pdf-section-title">Financial Summary</div>
                     <div style="display:flex;gap:15px;margin-bottom:15px;">
-                        <div class="pdf-info-card" style="flex:1;text-align:center;"><strong>Total Assets</strong><br><span style="color:#25D366;font-size:16px;">RM {{ number_format($totalAssets, 2) }}</span></div>
-                        <div class="pdf-info-card" style="flex:1;text-align:center;"><strong>Total Debts</strong><br><span style="color:#dc3545;font-size:16px;">RM {{ number_format($totalDebts, 2) }}</span></div>
-                        <div class="pdf-info-card" style="flex:1;text-align:center;"><strong>Net Estate</strong><br><span style="color:#1a5fb4;font-size:16px;">RM {{ number_format($netEstate, 2) }}</span></div>
+                        <div class="pdf-info-card" style="flex:1;text-align:center;"><strong>Total Assets</strong><br><span style="color:#25D366;font-size:16px;">RM <?php echo e(number_format($totalAssets, 2)); ?></span></div>
+                        <div class="pdf-info-card" style="flex:1;text-align:center;"><strong>Total Debts</strong><br><span style="color:#dc3545;font-size:16px;">RM <?php echo e(number_format($totalDebts, 2)); ?></span></div>
+                        <div class="pdf-info-card" style="flex:1;text-align:center;"><strong>Net Estate</strong><br><span style="color:#1a5fb4;font-size:16px;">RM <?php echo e(number_format($netEstate, 2)); ?></span></div>
                     </div>
 
                     <!-- Assets -->
-                    @if($assetsCount > 0)
-                    <div class="pdf-section-title">Assets ({{ $assetsCount }})</div>
+                    <?php if($assetsCount > 0): ?>
+                    <div class="pdf-section-title">Assets (<?php echo e($assetsCount); ?>)</div>
                     <table class="pdf-info-table">
                         <thead><tr style="background:#f8fafc;"><th><strong>Asset Name</strong></th><th><strong>Value (RM)</strong></th><th><strong>Ownership</strong></th></tr></thead>
                         <tbody>
-                            @foreach($estate->assets as $asset)
+                            <?php $__currentLoopData = $estate->assets; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $asset): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <tr>
-                                <td>{{ $asset->name ?? 'N/A' }}</td>
-                                <td>RM {{ number_format($asset->value ?? 0, 2) }}</td>
-                                <td>{{ $asset->ownership_percentage ?? 100 }}%</td>
+                                <td><?php echo e($asset->name ?? 'N/A'); ?></td>
+                                <td>RM <?php echo e(number_format($asset->value ?? 0, 2)); ?></td>
+                                <td><?php echo e($asset->ownership_percentage ?? 100); ?>%</td>
                             </tr>
-                            @endforeach
-                            <tr style="background:#f1f5f9;font-weight:700;"><td colspan="1">Total Assets</td><td colspan="2">RM {{ number_format($totalAssets, 2) }}</td></tr>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                            <tr style="background:#f1f5f9;font-weight:700;"><td colspan="1">Total Assets</td><td colspan="2">RM <?php echo e(number_format($totalAssets, 2)); ?></td></tr>
                         </tbody>
                     </table>
-                    @endif
+                    <?php endif; ?>
 
                     <!-- Debts -->
-                    @if($debtsCount > 0)
-                    <div class="pdf-section-title">Debts ({{ $debtsCount }})</div>
+                    <?php if($debtsCount > 0): ?>
+                    <div class="pdf-section-title">Debts (<?php echo e($debtsCount); ?>)</div>
                     <table class="pdf-info-table">
                         <thead><tr style="background:#f8fafc;"><th><strong>Creditor</strong></th><th><strong>Type</strong></th><th><strong>Amount (RM)</strong></th></tr></thead>
                         <tbody>
-                            @foreach($estate->debts as $debt)
+                            <?php $__currentLoopData = $estate->debts; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $debt): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <tr>
-                                <td>{{ $debt->creditor_name ?? 'N/A' }}</td>
-                                <td>{{ $debt->debt_type ?? $debt->type ?? 'Other' }}</td>
-                                <td>RM {{ number_format($debt->amount ?? 0, 2) }}</td>
+                                <td><?php echo e($debt->creditor_name ?? 'N/A'); ?></td>
+                                <td><?php echo e($debt->debt_type ?? $debt->type ?? 'Other'); ?></td>
+                                <td>RM <?php echo e(number_format($debt->amount ?? 0, 2)); ?></td>
                             </tr>
-                            @endforeach
-                            <tr style="background:#f1f5f9;font-weight:700;"><td colspan="2">Total Debts</td><td>RM {{ number_format($totalDebts, 2) }}</td></tr>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                            <tr style="background:#f1f5f9;font-weight:700;"><td colspan="2">Total Debts</td><td>RM <?php echo e(number_format($totalDebts, 2)); ?></td></tr>
                         </tbody>
                     </table>
-                    @endif
+                    <?php endif; ?>
 
                     <!-- Faraid Heirs Distribution -->
-                    @if($heirsCount > 0)
-                    @php
+                    <?php if($heirsCount > 0): ?>
+                    <?php
                         $totalHeirPct = $estate->heirs->sum('share_percentage');
                         $remainingForHeirs = $netEstate - (($estate->wasiyyah->sum('requested_percentage') / 100) * $netEstate);
-                    @endphp
+                    ?>
                     <div class="pdf-section-title">Faraid Heirs Distribution</div>
                     <table class="pdf-info-table">
                         <thead><tr style="background:#f8fafc;"><th><strong>Heir Name</strong></th><th><strong>Relationship</strong></th><th><strong>Share %</strong></th><th><strong>Amount (RM)</strong></th></tr></thead>
                         <tbody>
-                            @foreach($estate->heirs as $heir)
-                            @php
+                            <?php $__currentLoopData = $estate->heirs; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $heir): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <?php
                                 $heirAmount = ($heir->share_percentage / 100) * $remainingForHeirs;
-                            @endphp
+                            ?>
                             <tr>
-                                <td>{{ $heir->name ?? 'N/A' }}</td>
-                                <td>{{ ucfirst(str_replace('_', ' ', $heir->relationship ?? 'N/A')) }}</td>
-                                <td>{{ number_format($heir->share_percentage, 2) }}%</td>
-                                <td>RM {{ number_format($heirAmount, 2) }}</td>
+                                <td><?php echo e($heir->name ?? 'N/A'); ?></td>
+                                <td><?php echo e(ucfirst(str_replace('_', ' ', $heir->relationship ?? 'N/A'))); ?></td>
+                                <td><?php echo e(number_format($heir->share_percentage, 2)); ?>%</td>
+                                <td>RM <?php echo e(number_format($heirAmount, 2)); ?></td>
                             </tr>
-                            @endforeach
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             <tr style="background:#f1f5f9;font-weight:700;">
                                 <td colspan="2">Total</td>
-                                <td>{{ number_format($totalHeirPct, 2) }}%</td>
-                                <td>RM {{ number_format($remainingForHeirs, 2) }}</td>
+                                <td><?php echo e(number_format($totalHeirPct, 2)); ?>%</td>
+                                <td>RM <?php echo e(number_format($remainingForHeirs, 2)); ?></td>
                             </tr>
                         </tbody>
                     </table>
-                    @endif
+                    <?php endif; ?>
 
                     <!-- Wasiyyah Beneficiaries -->
-                    @if($wasiyyahCount > 0)
-                    @php
+                    <?php if($wasiyyahCount > 0): ?>
+                    <?php
                         $totalWasiyyahPct = $estate->wasiyyah->sum('requested_percentage');
                         $wasiyyahAmount = ($totalWasiyyahPct / 100) * $netEstate;
-                    @endphp
+                    ?>
                     <div class="pdf-section-title">Wasiyyah Beneficiaries</div>
                     <table class="pdf-info-table">
                         <thead><tr style="background:#f8fafc;"><th><strong>Beneficiary Name</strong></th><th><strong>Relationship</strong></th><th><strong>Share %</strong></th><th><strong>Amount (RM)</strong></th></tr></thead>
                         <tbody>
-                            @foreach($estate->wasiyyah as $item)
-                            @php
+                            <?php $__currentLoopData = $estate->wasiyyah; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <?php
                                 $itemAmount = ($item->requested_percentage / 100) * $netEstate;
-                            @endphp
+                            ?>
                             <tr>
-                                <td>{{ $item->beneficiary_name ?? 'N/A' }}</td>
-                                <td>{{ ucfirst($item->relationship ?? 'N/A') }}</td>
-                                <td>{{ number_format($item->requested_percentage, 2) }}%</td>
-                                <td>RM {{ number_format($itemAmount, 2) }}</td>
+                                <td><?php echo e($item->beneficiary_name ?? 'N/A'); ?></td>
+                                <td><?php echo e(ucfirst($item->relationship ?? 'N/A')); ?></td>
+                                <td><?php echo e(number_format($item->requested_percentage, 2)); ?>%</td>
+                                <td>RM <?php echo e(number_format($itemAmount, 2)); ?></td>
                             </tr>
-                            @endforeach
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             <tr style="background:#f1f5f9;font-weight:700;">
                                 <td colspan="2">Total Wasiyyah</td>
-                                <td>{{ number_format($totalWasiyyahPct, 2) }}%</td>
-                                <td>RM {{ number_format($wasiyyahAmount, 2) }}</td>
+                                <td><?php echo e(number_format($totalWasiyyahPct, 2)); ?>%</td>
+                                <td>RM <?php echo e(number_format($wasiyyahAmount, 2)); ?></td>
                             </tr>
                         </tbody>
                     </table>
-                    @endif
+                    <?php endif; ?>
 
                     <!-- Trustee Information -->
-                    @if($estate->trustee_name)
+                    <?php if($estate->trustee_name): ?>
                     <div class="pdf-section-title">Trustee Information</div>
                     <table class="pdf-info-table">
-                        <tr><td><strong>Trustee Name</strong></td><td>{{ $estate->trustee_name }}</td></tr>
-                        <tr><td><strong>Relationship</strong></td><td>{{ $estate->trustee_relationship ?? 'N/A' }}</td></tr>
-                        @if($estate->trustee_nric)<tr><td><strong>NRIC/Passport</strong></td><td>{{ $estate->trustee_nric }}</td></tr>@endif
-                        <tr><td><strong>Email</strong></td><td>{{ $estate->trustee_email ?? 'Not provided' }}</td></tr>
-                        @if($estate->trustee_phone)<tr><td><strong>Phone</strong></td><td>{{ $estate->trustee_phone }}</td></tr>@endif
+                        <tr><td><strong>Trustee Name</strong></td><td><?php echo e($estate->trustee_name); ?></td></tr>
+                        <tr><td><strong>Relationship</strong></td><td><?php echo e($estate->trustee_relationship ?? 'N/A'); ?></td></tr>
+                        <?php if($estate->trustee_nric): ?><tr><td><strong>NRIC/Passport</strong></td><td><?php echo e($estate->trustee_nric); ?></td></tr><?php endif; ?>
+                        <tr><td><strong>Email</strong></td><td><?php echo e($estate->trustee_email ?? 'Not provided'); ?></td></tr>
+                        <?php if($estate->trustee_phone): ?><tr><td><strong>Phone</strong></td><td><?php echo e($estate->trustee_phone); ?></td></tr><?php endif; ?>
                     </table>
-                    @endif
+                    <?php endif; ?>
 
                     <div style="margin-top:20px;padding-top:10px;border-top:1px solid #e2e8f0;font-size:10px;color:#94a3b8;text-align:center;">
-                        <p>This is an official estate distribution statement. Generated on {{ now()->format('d F Y, h:i A') }} | Document ID: {{ $estate->unique_id }}</p>
+                        <p>This is an official estate distribution statement. Generated on <?php echo e(now()->format('d F Y, h:i A')); ?> | Document ID: <?php echo e($estate->unique_id); ?></p>
                         <p>This document is computer-generated and does not require a signature.</p>
                     </div>
                 </div>
             </div>
-        @endforeach
-    @endif
+        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+    <?php endif; ?>
 </div>
 
 <script>
@@ -1517,4 +1519,5 @@
         printWindow.document.close();
     };
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\laragon\www\neo-faraid\resources\views/estate-setup/index.blade.php ENDPATH**/ ?>
