@@ -8,7 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
   <title>Calculation Details • Neo Faraid Admin</title>
   <meta name="description" content="View and manage inheritance calculation details in Neo Faraid Admin Panel">
-  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
@@ -1123,28 +1123,28 @@
   <!-- Navigation Bar -->
   <nav class="admin-top-nav" role="navigation" aria-label="Admin navigation">
     <div class="nav-left">
-      <a href="{{ route('admin.dashboard') }}" class="admin-logo" aria-label="Neo Faraid Admin Home">
+      <a href="<?php echo e(route('admin.dashboard')); ?>" class="admin-logo" aria-label="Neo Faraid Admin Home">
         <i class="fas fa-layer-group" style="color: var(--accent-color); font-size: 1.5rem; filter: drop-shadow(0 2px 4px rgba(255,215,0,0.3)); animation: logoFloat 4s ease-in-out infinite;"></i>
         <span class="admin-logo-text">Neo Faraid Admin</span>
       </a>
     </div>
     <div class="nav-right">
-      @php
+      <?php
         $user = auth()->user();
         $lastLogin = $user->last_login_at ? \Carbon\Carbon::parse($user->last_login_at)->diffForHumans() : 'Recently';
         $fullInitials = strtoupper(implode('', array_map(function($name) { return substr($name, 0, 1); }, explode(' ', $user->name, 2))));
-      @endphp
+      ?>
       <div class="user-profile-container" id="user-profile-container">
-        <button class="user-profile-btn" id="user-profile-btn" aria-label="User profile menu" aria-expanded="false" aria-haspopup="true" data-user-role="{{ $user->role }}" data-user-initials="{{ $fullInitials }}">
+        <button class="user-profile-btn" id="user-profile-btn" aria-label="User profile menu" aria-expanded="false" aria-haspopup="true" data-user-role="<?php echo e($user->role); ?>" data-user-initials="<?php echo e($fullInitials); ?>">
           <div class="user-avatar" aria-hidden="true">
-            <span class="avatar-initials">{{ $fullInitials }}</span>
-            @if($user->role === 'admin')
+            <span class="avatar-initials"><?php echo e($fullInitials); ?></span>
+            <?php if($user->role === 'admin'): ?>
               <span class="admin-badge" aria-label="Administrator">A</span>
-            @endif
+            <?php endif; ?>
           </div>
           <div class="user-profile-info">
-            <span class="user-name">{{ $user->name }}</span>
-            <span class="user-role">{{ ucfirst($user->role) }}</span>
+            <span class="user-name"><?php echo e($user->name); ?></span>
+            <span class="user-role"><?php echo e(ucfirst($user->role)); ?></span>
           </div>
           <svg class="chevron-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
@@ -1153,24 +1153,25 @@
         <div class="user-profile-dropdown" id="user-profile-dropdown" role="menu" aria-label="User profile menu" aria-hidden="true">
           <div class="profile-header">
             <div class="profile-avatar-large" aria-hidden="true">
-              <span class="avatar-initials-large">{{ $fullInitials }}</span>
-              @if($user->role === 'admin')
+              <span class="avatar-initials-large"><?php echo e($fullInitials); ?></span>
+              <?php if($user->role === 'admin'): ?>
                 <div class="admin-badge-large" aria-label="Administrator">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
                   </svg>
                 </div>
-              @endif
+              <?php endif; ?>
             </div>
             <div class="profile-info">
-              <h3 class="profile-name">{{ $user->name }}</h3>
-              <p class="profile-email">{{ $user->email }}</p>
+              <h3 class="profile-name"><?php echo e($user->name); ?></h3>
+              <p class="profile-email"><?php echo e($user->email); ?></p>
               <div class="profile-meta">
                 <span class="last-login">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                   </svg>
-                  Last login: {{ $lastLogin }}
+                  Last login: <?php echo e($lastLogin); ?>
+
                 </span>
                 <span class="user-status active">● Online</span>
               </div>
@@ -1179,27 +1180,27 @@
           <div class="dropdown-section">
             <h4 class="section-title">Navigation</h4>
             <nav class="dropdown-nav" role="navigation" aria-label="Admin navigation">
-              <a href="{{ route('admin.users.index') }}" class="dropdown-nav-item {{ request()->is('admin/users*') ? 'active' : '' }}">
+              <a href="<?php echo e(route('admin.users.index')); ?>" class="dropdown-nav-item <?php echo e(request()->is('admin/users*') ? 'active' : ''); ?>">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197"/></svg>
                 <span>Manage Users</span>
               </a>
-              <a href="{{ route('admin.feedback.index') }}" class="dropdown-nav-item {{ request()->is('admin/feedback*') ? 'active' : '' }}">
+              <a href="<?php echo e(route('admin.feedback.index')); ?>" class="dropdown-nav-item <?php echo e(request()->is('admin/feedback*') ? 'active' : ''); ?>">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/></svg>
                 <span>Manage Feedback</span>
               </a>
-              <a href="{{ route('admin.faq.index') }}" class="dropdown-nav-item {{ request()->is('admin/faq*') ? 'active' : '' }}">
+              <a href="<?php echo e(route('admin.faq.index')); ?>" class="dropdown-nav-item <?php echo e(request()->is('admin/faq*') ? 'active' : ''); ?>">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                 <span>Manage FAQ</span>
               </a>
-              <a href="{{ route('admin.calculations.index') }}" class="dropdown-nav-item active">
+              <a href="<?php echo e(route('admin.calculations.index')); ?>" class="dropdown-nav-item active">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
                 <span>Manage Calculations</span>
               </a>
-              <a href="{{ route('admin.instant-estate.index') }}" class="dropdown-nav-item {{ request()->is('admin/instant-estate*') ? 'active' : '' }}">
+              <a href="<?php echo e(route('admin.instant-estate.index')); ?>" class="dropdown-nav-item <?php echo e(request()->is('admin/instant-estate*') ? 'active' : ''); ?>">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                 <span>Manage Instant Estate</span>
               </a>
-              <a href="{{ route('admin.estate-setup.index') }}" class="dropdown-nav-item {{ request()->is('admin/estate-setup*') ? 'active' : '' }}">
+              <a href="<?php echo e(route('admin.estate-setup.index')); ?>" class="dropdown-nav-item <?php echo e(request()->is('admin/estate-setup*') ? 'active' : ''); ?>">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
                 <span>Manage Estate Planning</span>
               </a>
@@ -1208,7 +1209,7 @@
           <div class="dropdown-section">
             <h4 class="section-title">Account</h4>
             <div class="account-links">
-              <a href="{{ route('profile.edit') }}" class="account-link {{ request()->is('profile*') ? 'active' : '' }}" role="menuitem">
+              <a href="<?php echo e(route('profile.edit')); ?>" class="account-link <?php echo e(request()->is('profile*') ? 'active' : ''); ?>" role="menuitem">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -1218,8 +1219,8 @@
             </div>
           </div>
           <div class="dropdown-footer">
-            <form method="POST" action="{{ route('logout') }}" class="logout-form">
-              @csrf
+            <form method="POST" action="<?php echo e(route('logout')); ?>" class="logout-form">
+              <?php echo csrf_field(); ?>
               <button type="submit" class="logout-btn" role="menuitem" aria-label="Log out from admin panel">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
@@ -1238,9 +1239,9 @@
     <header class="page-header">
       <div class="page-title">
         <h1>Calculation Details</h1>
-        <p class="page-subtitle">Deceased: {{ $calculation->deceased_name }} | ID: {{ $calculation->id }}</p>
+        <p class="page-subtitle">Deceased: <?php echo e($calculation->deceased_name); ?> | ID: <?php echo e($calculation->id); ?></p>
       </div>
-      <a href="{{ route('admin.calculations.index') }}" class="btn btn-outline">
+      <a href="<?php echo e(route('admin.calculations.index')); ?>" class="btn btn-outline">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18"/>
         </svg>
@@ -1248,25 +1249,27 @@
       </a>
     </header>
 
-    @if(session('success'))
+    <?php if(session('success')): ?>
       <div class="alert-message alert-success" role="alert">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
         </svg>
-        {{ session('success') }}
-      </div>
-    @endif
+        <?php echo e(session('success')); ?>
 
-    @if(session('error'))
+      </div>
+    <?php endif; ?>
+
+    <?php if(session('error')): ?>
       <div class="alert-message alert-error" role="alert">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
         </svg>
-        {{ session('error') }}
-      </div>
-    @endif
+        <?php echo e(session('error')); ?>
 
-    @if(!$readiness['ready'])
+      </div>
+    <?php endif; ?>
+
+    <?php if(!$readiness['ready']): ?>
       <div class="alert-message alert-warning" role="alert">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/>
@@ -1274,34 +1277,34 @@
         <div>
           <strong>Calculation Incomplete:</strong>
           <ul style="margin-top: 0.5rem; padding-left: 1.5rem;">
-            @foreach($readiness['issues'] as $issue)
-              <li>{{ $issue }}</li>
-            @endforeach
+            <?php $__currentLoopData = $readiness['issues']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $issue): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+              <li><?php echo e($issue); ?></li>
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
           </ul>
         </div>
       </div>
-    @endif
+    <?php endif; ?>
 
     <!-- Statistics Cards -->
     <div class="stats-cards">
       <div class="stats-card">
         <div class="stats-card-title">Total Assets</div>
-        <div class="stats-card-value">RM {{ number_format($calculation->total_assets, 2) }}</div>
+        <div class="stats-card-value">RM <?php echo e(number_format($calculation->total_assets, 2)); ?></div>
         <div class="stats-card-change">Registered assets value</div>
       </div>
       <div class="stats-card">
         <div class="stats-card-title">Total Heirs</div>
-        <div class="stats-card-value">{{ $calculation->total_heirs ?? 0 }}</div>
+        <div class="stats-card-value"><?php echo e($calculation->total_heirs ?? 0); ?></div>
         <div class="stats-card-change">Configured heirs</div>
       </div>
       <div class="stats-card">
         <div class="stats-card-title">Eligible Recipients</div>
-        <div class="stats-card-value">{{ count($eligibleHeirs) }}</div>
+        <div class="stats-card-value"><?php echo e(count($eligibleHeirs)); ?></div>
         <div class="stats-card-change">Inheritance recipients</div>
       </div>
       <div class="stats-card">
         <div class="stats-card-title">Net Estate</div>
-        <div class="stats-card-value">RM {{ number_format($netEstate, 2) }}</div>
+        <div class="stats-card-value">RM <?php echo e(number_format($netEstate, 2)); ?></div>
         <div class="stats-card-change">After deductions</div>
       </div>
     </div>
@@ -1317,39 +1320,40 @@
       <div class="info-grid">
         <div class="info-item">
           <div class="info-label">Deceased Name</div>
-          <div class="info-value">{{ $calculation->deceased_name }}</div>
+          <div class="info-value"><?php echo e($calculation->deceased_name); ?></div>
         </div>
         <div class="info-item">
           <div class="info-label">Gender</div>
-          <div class="info-value">{{ ucfirst($calculation->deceased_gender) }}</div>
+          <div class="info-value"><?php echo e(ucfirst($calculation->deceased_gender)); ?></div>
         </div>
         <div class="info-item">
           <div class="info-label">NRIC</div>
-          <div class="info-value">{{ $calculation->deceased_nric ?? 'N/A' }}</div>
+          <div class="info-value"><?php echo e($calculation->deceased_nric ?? 'N/A'); ?></div>
         </div>
         <div class="info-item">
           <div class="info-label">Date of Death</div>
-          <div class="info-value">{{ $calculation->date_of_death ? date('d M Y', strtotime($calculation->date_of_death)) : 'N/A' }}</div>
+          <div class="info-value"><?php echo e($calculation->date_of_death ? date('d M Y', strtotime($calculation->date_of_death)) : 'N/A'); ?></div>
         </div>
         <div class="info-item">
           <div class="info-label">Marital Status</div>
-          <div class="info-value">{{ ucfirst($calculation->marital_status) }}</div>
+          <div class="info-value"><?php echo e(ucfirst($calculation->marital_status)); ?></div>
         </div>
         <div class="info-item">
           <div class="info-label">Scenario</div>
           <div class="info-value">
-            <span class="badge {{ ($calculation->scenario_number ?? 0) > 0 ? 'badge-success' : 'badge-warning' }}">
-              Scenario {{ $calculation->scenario_number ?? 'N/A' }}
+            <span class="badge <?php echo e(($calculation->scenario_number ?? 0) > 0 ? 'badge-success' : 'badge-warning'); ?>">
+              Scenario <?php echo e($calculation->scenario_number ?? 'N/A'); ?>
+
             </span>
           </div>
         </div>
         <div class="info-item">
           <div class="info-label">Created By</div>
-          <div class="info-value">{{ $calculation->user->name ?? 'Unknown' }} ({{ $calculation->user->email ?? 'N/A' }})</div>
+          <div class="info-value"><?php echo e($calculation->user->name ?? 'Unknown'); ?> (<?php echo e($calculation->user->email ?? 'N/A'); ?>)</div>
         </div>
         <div class="info-item">
           <div class="info-label">Created At</div>
-          <div class="info-value">{{ $calculation->created_at?->format('d M Y, h:i A') }}</div>
+          <div class="info-value"><?php echo e($calculation->created_at?->format('d M Y, h:i A')); ?></div>
         </div>
       </div>
     </div>
@@ -1363,7 +1367,7 @@
         Heirs Configuration
       </div>
 
-      @if(!empty($heirsData) && count($heirsData) > 0)
+      <?php if(!empty($heirsData) && count($heirsData) > 0): ?>
         <div class="table-container">
           <table>
             <thead>
@@ -1373,46 +1377,46 @@
               </tr>
             </thead>
             <tbody>
-              @if(isset($heirsData['husband_count']) && $heirsData['husband_count'] > 0)
-                <tr><td>Husband</td><td>Count: {{ $heirsData['husband_count'] }}</td></tr>
-              @endif
-              @if(isset($heirsData['wife_count']) && $heirsData['wife_count'] > 0)
-                <tr><td>Wife</td><td>Count: {{ $heirsData['wife_count'] }}</td></tr>
-              @endif
-              @if(isset($heirsData['father_status']) && $heirsData['father_status'] === 'alive')
+              <?php if(isset($heirsData['husband_count']) && $heirsData['husband_count'] > 0): ?>
+                <tr><td>Husband</td><td>Count: <?php echo e($heirsData['husband_count']); ?></td></tr>
+              <?php endif; ?>
+              <?php if(isset($heirsData['wife_count']) && $heirsData['wife_count'] > 0): ?>
+                <tr><td>Wife</td><td>Count: <?php echo e($heirsData['wife_count']); ?></td></tr>
+              <?php endif; ?>
+              <?php if(isset($heirsData['father_status']) && $heirsData['father_status'] === 'alive'): ?>
                 <tr><td>Father</td><td>Status: Alive</td></tr>
-              @endif
-              @if(isset($heirsData['mother_status']) && $heirsData['mother_status'] === 'alive')
+              <?php endif; ?>
+              <?php if(isset($heirsData['mother_status']) && $heirsData['mother_status'] === 'alive'): ?>
                 <tr><td>Mother</td><td>Status: Alive</td></tr>
-              @endif
-              @if(isset($heirsData['son_count']) && $heirsData['son_count'] > 0)
-                <tr><td>Sons</td><td>Count: {{ $heirsData['son_count'] }}</td></tr>
-              @endif
-              @if(isset($heirsData['daughter_count']) && $heirsData['daughter_count'] > 0)
-                <tr><td>Daughters</td><td>Count: {{ $heirsData['daughter_count'] }}</td></tr>
-              @endif
-              @if(isset($heirsData['full_brother_count']) && $heirsData['full_brother_count'] > 0)
-                <tr><td>Full Brothers</td><td>Count: {{ $heirsData['full_brother_count'] }}</td></tr>
-              @endif
-              @if(isset($heirsData['full_sister_count']) && $heirsData['full_sister_count'] > 0)
-                <tr><td>Full Sisters</td><td>Count: {{ $heirsData['full_sister_count'] }}</td></tr>
-              @endif
-              @if(isset($heirsData['paternal_half_brother']) && $heirsData['paternal_half_brother'] > 0)
-                <tr><td>Paternal Half-Brothers</td><td>Count: {{ $heirsData['paternal_half_brother'] }}</td></tr>
-              @endif
-              @if(isset($heirsData['paternal_half_sister']) && $heirsData['paternal_half_sister'] > 0)
-                <tr><td>Paternal Half-Sisters</td><td>Count: {{ $heirsData['paternal_half_sister'] }}</td></tr>
-              @endif
-              @if(isset($heirsData['maternal_half_brother']) && $heirsData['maternal_half_brother'] > 0)
-                <tr><td>Maternal Half-Brothers</td><td>Count: {{ $heirsData['maternal_half_brother'] }}</td></tr>
-              @endif
-              @if(isset($heirsData['maternal_half_sister']) && $heirsData['maternal_half_sister'] > 0)
-                <tr><td>Maternal Half-Sisters</td><td>Count: {{ $heirsData['maternal_half_sister'] }}</td></tr>
-              @endif
+              <?php endif; ?>
+              <?php if(isset($heirsData['son_count']) && $heirsData['son_count'] > 0): ?>
+                <tr><td>Sons</td><td>Count: <?php echo e($heirsData['son_count']); ?></td></tr>
+              <?php endif; ?>
+              <?php if(isset($heirsData['daughter_count']) && $heirsData['daughter_count'] > 0): ?>
+                <tr><td>Daughters</td><td>Count: <?php echo e($heirsData['daughter_count']); ?></td></tr>
+              <?php endif; ?>
+              <?php if(isset($heirsData['full_brother_count']) && $heirsData['full_brother_count'] > 0): ?>
+                <tr><td>Full Brothers</td><td>Count: <?php echo e($heirsData['full_brother_count']); ?></td></tr>
+              <?php endif; ?>
+              <?php if(isset($heirsData['full_sister_count']) && $heirsData['full_sister_count'] > 0): ?>
+                <tr><td>Full Sisters</td><td>Count: <?php echo e($heirsData['full_sister_count']); ?></td></tr>
+              <?php endif; ?>
+              <?php if(isset($heirsData['paternal_half_brother_count']) && $heirsData['paternal_half_brother_count'] > 0): ?>
+                <tr><td>Paternal Half-Brothers</td><td>Count: <?php echo e($heirsData['paternal_half_brother_count']); ?></td></tr>
+              <?php endif; ?>
+              <?php if(isset($heirsData['paternal_half_sister_count']) && $heirsData['paternal_half_sister_count'] > 0): ?>
+                <tr><td>Paternal Half-Sisters</td><td>Count: <?php echo e($heirsData['paternal_half_sister_count']); ?></td></tr>
+              <?php endif; ?>
+              <?php if(isset($heirsData['maternal_half_brother_count']) && $heirsData['maternal_half_brother_count'] > 0): ?>
+                <tr><td>Maternal Half-Brothers</td><td>Count: <?php echo e($heirsData['maternal_half_brother_count']); ?></td></tr>
+              <?php endif; ?>
+              <?php if(isset($heirsData['maternal_half_sister_count']) && $heirsData['maternal_half_sister_count'] > 0): ?>
+                <tr><td>Maternal Half-Sisters</td><td>Count: <?php echo e($heirsData['maternal_half_sister_count']); ?></td></tr>
+              <?php endif; ?>
             </tbody>
           </table>
         </div>
-      @else
+      <?php else: ?>
         <div class="no-data">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197"/>
@@ -1420,7 +1424,7 @@
           <h3>No Heirs Data</h3>
           <p>Heirs configuration data is not available for this calculation.</p>
         </div>
-      @endif
+      <?php endif; ?>
     </div>
 
     <!-- Assets Section -->
@@ -1432,7 +1436,7 @@
         Assets
       </div>
 
-      @if(!empty($assetsData) && isset($assetsData['properties']) && count($assetsData['properties']) > 0)
+      <?php if(!empty($assetsData) && isset($assetsData['properties']) && count($assetsData['properties']) > 0): ?>
         <div class="table-container">
           <table>
             <thead>
@@ -1445,22 +1449,22 @@
               </tr>
             </thead>
             <tbody>
-              @foreach($assetsData['properties'] as $asset)
-                @php
+              <?php $__currentLoopData = $assetsData['properties']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $asset): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <?php
                   $share = ($asset['value'] ?? 0) * (($asset['ownership'] ?? 100) / 100);
-                @endphp
+                ?>
                 <tr>
-                  <td><strong>{{ $asset['type'] ?? 'N/A' }}</strong></td>
-                  <td>{{ $asset['description'] ?? '-' }}</td>
-                  <td>RM {{ number_format($asset['value'] ?? 0, 2) }}</td>
-                  <td>{{ $asset['ownership'] ?? 100 }}%</td>
-                  <td>RM {{ number_format($share, 2) }}</td>
+                  <td><strong><?php echo e($asset['type'] ?? 'N/A'); ?></strong></td>
+                  <td><?php echo e($asset['description'] ?? '-'); ?></td>
+                  <td>RM <?php echo e(number_format($asset['value'] ?? 0, 2)); ?></td>
+                  <td><?php echo e($asset['ownership'] ?? 100); ?>%</td>
+                  <td>RM <?php echo e(number_format($share, 2)); ?></td>
                 </tr>
-              @endforeach
+              <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </tbody>
           </table>
         </div>
-      @else
+      <?php else: ?>
         <div class="no-data">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
@@ -1468,7 +1472,7 @@
           <h3>No Assets Found</h3>
           <p>No assets have been registered for this calculation.</p>
         </div>
-      @endif
+      <?php endif; ?>
     </div>
 
     <!-- Inheritance Distribution Section -->
@@ -1481,7 +1485,7 @@
         Inheritance Distribution
       </div>
 
-      @if(count($eligibleHeirs) > 0)
+      <?php if(count($eligibleHeirs) > 0): ?>
         <div class="table-container">
           <table>
             <thead>
@@ -1495,8 +1499,8 @@
               </tr>
             </thead>
             <tbody>
-              @foreach($eligibleHeirs as $heir)
-                @php
+              <?php $__currentLoopData = $eligibleHeirs; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $heir): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <?php
                   $heirArray = is_array($heir) ? $heir : (array)$heir;
                   $amount = $heirArray['amount'] ?? 0;
                   $percentage = ($netEstate > 0) ? ($amount / $netEstate) * 100 : 0;
@@ -1507,21 +1511,21 @@
                   if (str_contains($status, 'Fixed')) $badgeClass = 'badge-success';
                   elseif (str_contains($status, 'Asabah')) $badgeClass = 'badge-warning';
                   elseif (str_contains($status, 'Surplus')) $badgeClass = 'badge-info';
-                @endphp
+                ?>
                 <tr>
-                  <td><strong>{{ $heirArray['heir'] ?? $heirArray['name'] ?? 'Unknown' }}</strong></td>
-                  <td>{{ ucfirst($heirArray['relationship'] ?? 'Unknown') }}</td>
-                  <td><span class="badge {{ $badgeClass }}">{{ $shareDisplay }}</span></td>
-                  <td><strong>RM {{ number_format($amount, 2) }}</strong></td>
-                  <td>{{ number_format($percentage, 2) }}%</td>
-                  <td><span class="badge {{ $badgeClass }}">{{ $status }}</span></td>
+                  <td><strong><?php echo e($heirArray['heir'] ?? $heirArray['name'] ?? 'Unknown'); ?></strong></td>
+                  <td><?php echo e(ucfirst($heirArray['relationship'] ?? 'Unknown')); ?></td>
+                  <td><span class="badge <?php echo e($badgeClass); ?>"><?php echo e($shareDisplay); ?></span></td>
+                  <td><strong>RM <?php echo e(number_format($amount, 2)); ?></strong></td>
+                  <td><?php echo e(number_format($percentage, 2)); ?>%</td>
+                  <td><span class="badge <?php echo e($badgeClass); ?>"><?php echo e($status); ?></span></td>
                 </tr>
-              @endforeach
+              <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </tbody>
             <tfoot>
               <tr class="total-row">
                 <td colspan="3" style="text-align: right;">Total Distributed:</td>
-                <td colspan="3">RM {{ number_format($totalDistributed, 2) }} (100%)</td>
+                <td colspan="3">RM <?php echo e(number_format($totalDistributed, 2)); ?> (100%)</td>
               </tr>
             </tfoot>
           </table>
@@ -1530,13 +1534,13 @@
         <div class="summary-box">
           <h3>Distribution Summary</h3>
           <ul>
-            <li><strong>Total Distributed:</strong> RM {{ number_format($totalDistributed, 2) }}</li>
-            <li><strong>Net Estate:</strong> RM {{ number_format($netEstate, 2) }}</li>
-            <li><strong>Eligible Heirs:</strong> {{ count($eligibleHeirs) }}</li>
-            <li><strong>Scenario Applied:</strong> Scenario {{ $calculation->scenario_number ?? 'N/A' }}</li>
+            <li><strong>Total Distributed:</strong> RM <?php echo e(number_format($totalDistributed, 2)); ?></li>
+            <li><strong>Net Estate:</strong> RM <?php echo e(number_format($netEstate, 2)); ?></li>
+            <li><strong>Eligible Heirs:</strong> <?php echo e(count($eligibleHeirs)); ?></li>
+            <li><strong>Scenario Applied:</strong> Scenario <?php echo e($calculation->scenario_number ?? 'N/A'); ?></li>
           </ul>
         </div>
-      @else
+      <?php else: ?>
         <div class="no-data">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
@@ -1544,12 +1548,12 @@
           <h3>No Distribution Data</h3>
           <p>No inheritance distribution has been calculated for this case yet.</p>
         </div>
-      @endif
+      <?php endif; ?>
     </div>
 
     <!-- Actions -->
     <div class="modal-footer" style="margin-top: 2rem; justify-content: flex-start; gap: 1rem; background: none; border: none; padding: 0;">
-      <button type="button" class="btn btn-danger" onclick="openDeleteModal('{{ $calculation->id }}', '{{ addslashes($calculation->deceased_name) }}')">
+      <button type="button" class="btn btn-danger" onclick="openDeleteModal('<?php echo e($calculation->id); ?>', '<?php echo e(addslashes($calculation->deceased_name)); ?>')">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
         </svg>
@@ -1583,7 +1587,7 @@
       </div>
       <div class="modal-footer" style="background: none; border: none; padding: 1.25rem 2rem;">
         <button type="button" class="btn-cancel" onclick="closeDeleteModal()">Cancel</button>
-        <form id="deleteForm" method="POST" style="display: none;">@csrf @method('DELETE')</form>
+        <form id="deleteForm" method="POST" style="display: none;"><?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?></form>
         <button type="button" class="btn-confirm-danger" id="confirmDeleteBtn" onclick="confirmDelete()">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
@@ -1844,4 +1848,4 @@
     });
   </script>
 </body>
-</html>
+</html><?php /**PATH C:\laragon\www\neo-faraid\resources\views/admin/calculations/show.blade.php ENDPATH**/ ?>
