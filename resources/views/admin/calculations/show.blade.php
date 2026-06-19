@@ -1397,17 +1397,17 @@
               @if(isset($heirsData['full_sister_count']) && $heirsData['full_sister_count'] > 0)
                 <tr><td>Full Sisters</td><td>Count: {{ $heirsData['full_sister_count'] }}</td></tr>
               @endif
-              @if(isset($heirsData['paternal_half_brother']) && $heirsData['paternal_half_brother'] > 0)
-                <tr><td>Paternal Half-Brothers</td><td>Count: {{ $heirsData['paternal_half_brother'] }}</td></tr>
+              @if(isset($heirsData['paternal_half_brother_count']) && $heirsData['paternal_half_brother_count'] > 0)
+                <tr><td>Paternal Half-Brothers</td><td>Count: {{ $heirsData['paternal_half_brother_count'] }}</td></tr>
               @endif
-              @if(isset($heirsData['paternal_half_sister']) && $heirsData['paternal_half_sister'] > 0)
-                <tr><td>Paternal Half-Sisters</td><td>Count: {{ $heirsData['paternal_half_sister'] }}</td></tr>
+              @if(isset($heirsData['paternal_half_sister_count']) && $heirsData['paternal_half_sister_count'] > 0)
+                <tr><td>Paternal Half-Sisters</td><td>Count: {{ $heirsData['paternal_half_sister_count'] }}</td></tr>
               @endif
-              @if(isset($heirsData['maternal_half_brother']) && $heirsData['maternal_half_brother'] > 0)
-                <tr><td>Maternal Half-Brothers</td><td>Count: {{ $heirsData['maternal_half_brother'] }}</td></tr>
+              @if(isset($heirsData['maternal_half_brother_count']) && $heirsData['maternal_half_brother_count'] > 0)
+                <tr><td>Maternal Half-Brothers</td><td>Count: {{ $heirsData['maternal_half_brother_count'] }}</td></tr>
               @endif
-              @if(isset($heirsData['maternal_half_sister']) && $heirsData['maternal_half_sister'] > 0)
-                <tr><td>Maternal Half-Sisters</td><td>Count: {{ $heirsData['maternal_half_sister'] }}</td></tr>
+              @if(isset($heirsData['maternal_half_sister_count']) && $heirsData['maternal_half_sister_count'] > 0)
+                <tr><td>Maternal Half-Sisters</td><td>Count: {{ $heirsData['maternal_half_sister_count'] }}</td></tr>
               @endif
             </tbody>
           </table>
