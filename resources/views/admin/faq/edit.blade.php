@@ -1081,6 +1081,56 @@
             cursor: pointer;
         }
         
+        /* Checkbox Styles */
+        .form-check {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .form-check-input {
+            width: 22px;
+            height: 22px;
+            border: 2px solid var(--light-border);
+            border-radius: 6px;
+            background: var(--white);
+            transition: var(--transition);
+            cursor: pointer;
+            position: relative;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+        
+        .form-check-input:checked {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .form-check-input:checked::after {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 8px;
+            width: 5px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+        
+        .form-check-input:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(26, 95, 180, 0.1);
+        }
+        
+        .form-check-label {
+            font-weight: 500;
+            color: var(--text-primary);
+            cursor: pointer;
+        }
+        
         /* ===== BUTTON STYLES ===== */
         .btn {
             padding: 0.75rem 1.5rem;
@@ -1670,6 +1720,12 @@
                 <h1>Edit FAQ</h1>
                 <p class="page-subtitle">Update frequently asked question details</p>
             </div>
+            <a href="{{ route('admin.faq.index') }}" class="btn-back">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                </svg>
+                Back to FAQ
+            </a>
         </header>
         
         <!-- Form Container -->
@@ -1741,22 +1797,10 @@
                         class="form-select @error('category') is-invalid @enderror"
                         required>
                         <option value="" disabled>Select a category</option>
-                        <option value="gettingStarted" 
-                            @if(old('category', $faq->category) == 'gettingStarted') selected @endif>
-                            Getting Started
-                        </option>
-                        <option value="calculations" 
-                            @if(old('category', $faq->category) == 'calculations') selected @endif>
-                            Calculations
-                        </option>
-                        <option value="securityPrivacy" 
-                            @if(old('category', $faq->category) == 'securityPrivacy') selected @endif>
-                            Security & Privacy
-                        </option>
-                        <option value="others" 
-                            @if(old('category', $faq->category) == 'others') selected @endif>
-                            Others
-                        </option>
+                        <option value="gettingStarted" {{ old('category', $faq->category) == 'gettingStarted' ? 'selected' : '' }}>Getting Started</option>
+                        <option value="calculations" {{ old('category', $faq->category) == 'calculations' ? 'selected' : '' }}>Calculations</option>
+                        <option value="securityPrivacy" {{ old('category', $faq->category) == 'securityPrivacy' ? 'selected' : '' }}>Security & Privacy</option>
+                        <option value="others" {{ old('category', $faq->category) == 'others' ? 'selected' : '' }}>Others</option>
                     </select>
                     @error('category')
                         <div class="form-text text-error">{{ $message }}</div>
@@ -1777,6 +1821,24 @@
                     @error('order')
                         <div class="form-text text-error">{{ $message }}</div>
                     @enderror
+                </div>
+
+                <!-- Publish Status -->
+                <div class="form-group">
+                    <div class="form-check">
+                        <input type="checkbox" 
+                               id="is_published" 
+                               name="is_published" 
+                               value="1"
+                               class="form-check-input"
+                               {{ old('is_published', $faq->is_published) ? 'checked' : '' }}>
+                        <label for="is_published" class="form-check-label">
+                            Publish this FAQ
+                        </label>
+                    </div>
+                    <div class="form-text">
+                        Unpublished FAQs won't be visible to users
+                    </div>
                 </div>
                 
                 <!-- Form Actions -->

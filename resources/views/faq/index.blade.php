@@ -108,10 +108,11 @@
         <div class="category-buttons">
             @php
                 $categories = [
-                    ['id' => 'all', 'name' => 'All Questions', 'icon' => 'all'],
-                    ['id' => 'getting-started', 'name' => 'Getting Started', 'icon' => 'getting-started'],
-                    ['id' => 'calculations', 'name' => 'Calculations', 'icon' => 'calculations'],
-                    ['id' => 'security-privacy', 'name' => 'Security & Privacy', 'icon' => 'security']
+                    ['id' => 'all', 'name' => 'All Questions'],
+                    ['id' => 'gettingStarted', 'name' => 'Getting Started'],
+                    ['id' => 'calculations', 'name' => 'Calculations'],
+                    ['id' => 'securityPrivacy', 'name' => 'Security & Privacy'],
+                    ['id' => 'others', 'name' => 'Other']
                 ];
             @endphp
             
@@ -119,14 +120,16 @@
                 <button class="category-btn {{ $index === 0 ? 'active' : '' }}" 
                         data-category="{{ $category['id'] }}">
                     <svg fill="currentColor" viewBox="0 0 20 20">
-                        @if($category['icon'] === 'all')
+                        @if($category['id'] === 'all')
                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd"/>
-                        @elseif($category['icon'] === 'getting-started')
+                        @elseif($category['id'] === 'gettingStarted')
                         <path fill-rule="evenodd" d="M12 7a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0V8.414l-4.293 4.293a1 1 0 01-1.414 0L8 10.414l-4.293 4.293a1 1 0 01-1.414-1.414l5-5a1 1 0 011.414 0L11 10.586 14.586 7H12z" clip-rule="evenodd"/>
-                        @elseif($category['icon'] === 'calculations')
+                        @elseif($category['id'] === 'calculations')
                         <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/>
-                        @else
+                        @elseif($category['id'] === 'securityPrivacy')
                         <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        @else
+                        <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
                         @endif
                     </svg>
                     {{ $category['name'] }}
@@ -137,112 +140,36 @@
 
     <!-- FAQ Accordion -->
     <div id="faq-accordion">
-        @php
-            $faqs = [
-                [
-                    'question' => 'What is the Neo Faraid Calculator?',
-                    'answer' => 'The Neo Faraid Calculator is a digital tool that calculates Islamic inheritance (Faraid) automatically based on user input such as heirs, assets, and liabilities. It provides accurate, Shariah-compliant results along with a visual family tree.',
-                    'category' => 'getting-started',
-                    'icon' => 'calculator'
-                ],
-                [
-                    'question' => 'Is the calculator Shariah-compliant?',
-                    'answer' => 'Yes. The system follows the principles and rules of Islamic inheritance based on the Quran, Sunnah, and recognized Faraid methodologies. Our calculations are verified by Islamic scholars to ensure compliance.',
-                    'category' => 'getting-started',
-                    'icon' => 'shariah'
-                ],
-                [
-                    'question' => 'Who can use this calculator?',
-                    'answer' => 'Anyone can use it, including individuals, families, students, researchers, educators, and legal practitioners. The interface is designed to be user-friendly for both beginners and experts.',
-                    'category' => 'getting-started',
-                    'icon' => 'users'
-                ],
-                [
-                    'question' => 'How accurate are the results?',
-                    'answer' => 'Calculations are generated using established Faraid rules. For complex cases, we recommend verifying with a certified Faraid expert. Our system is regularly updated to reflect the latest scholarly consensus.',
-                    'category' => 'calculations',
-                    'icon' => 'accuracy'
-                ],
-                [
-                    'question' => 'What information do I need to enter?',
-                    'answer' => 'You need to provide: deceased\'s details, list of heirs (alive or deceased), total assets, debts, funeral costs, and optional wasiyyah/liabilities. The system guides you through each step.',
-                    'category' => 'calculations',
-                    'icon' => 'input'
-                ],
-                [
-                    'question' => 'Support for predeceased heirs with grandchildren?',
-                    'answer' => 'Yes. Mark heir as deceased, enter surviving children; appropriate substitution rules apply automatically. The system handles complex family structures.',
-                    'category' => 'calculations',
-                    'icon' => 'family'
-                ],
-                [
-                    'question' => 'Is my data stored or shared?',
-                    'answer' => 'Your data is confidential and used only for calculation purposes unless you choose to save or export. We use bank-level encryption and do not share data with third parties.',
-                    'category' => 'security-privacy',
-                    'icon' => 'security'
-                ],
-                [
-                    'question' => 'Can I export the results?',
-                    'answer' => 'Yes. You can save the report, export as PDF, or download the distribution breakdown. All exports include detailed calculations and family tree visualization.',
-                    'category' => 'calculations',
-                    'icon' => 'export'
-                ],
-                [
-                    'question' => 'Does this replace legal or religious consultation?',
-                    'answer' => 'No. The calculator aids understanding but does not replace official advice. Consult certified authorities for official cases. Our tool is for educational and planning purposes.',
-                    'category' => 'getting-started',
-                    'icon' => 'legal'
-                ],
-                [
-                    'question' => 'Is the family tree generated automatically?',
-                    'answer' => 'Yes. A visual family tree is automatically created from the heirs you enter. It helps visualize relationships and inheritance distribution clearly.',
-                    'category' => 'calculations',
-                    'icon' => 'tree'
-                ],
-                [
-                    'question' => 'Is there a mobile app available?',
-                    'answer' => 'Currently, Neo Faraid is available as a web application that works perfectly on all mobile devices. We are developing native mobile apps for iOS and Android.',
-                    'category' => 'getting-started',
-                    'icon' => 'mobile'
-                ],
-                [
-                    'question' => 'What if I make a mistake in my input?',
-                    'answer' => 'You can easily edit any information at any step before finalizing. The system also has validation checks to prevent common input errors.',
-                    'category' => 'calculations',
-                    'icon' => 'edit'
-                ]
-            ];
-            
-            $icons = [
-                'calculator' => 'M4 2a2 2 0 012-2h8a2 2 0 012 2v2h2a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6a2 2 0 012-2h2V2zm2 2h8V2H6v2zM4 6v8h12V6H4z',
-                'shariah' => 'M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z',
-                'users' => 'M9 6a3 3 0 11-6 0 3 3 0 016 0zm8 0a3 3 0 11-6 0 3 3 0 016 0zm-4.07 11c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z',
-                'accuracy' => 'M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z',
-                'input' => 'M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884zM18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z',
-                'family' => 'M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zm-2 4a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z',
-                'security' => 'M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z',
-                'export' => 'M3 1a1 1 0 011 1v12a1 1 0 01-1 1h12a1 1 0 01-1-1V2a1 1 0 011-1h12a1 1 0 011 1v12a1 1 0 01-1 1H4a1 1 0 01-1-1v-1h1v1h12V2H4v1H3V2a1 1 0 011-1h12z',
-                'legal' => 'M7 2a1 1 0 00-.707 1.707L7 4.414v3.758a1 1 0 01-.293.707l-4 4C.817 14.769 2.156 18 4.828 18h10.343c2.673 0 4.012-3.231 2.122-5.121l-4-4A1 1 0 0113 8.172V4.414l.707-.707A1 1 0 0012 2H7z',
-                'tree' => 'M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z',
-                'mobile' => 'M7 2a2 2 0 00-2 2v12a2 2 0 002 2h6a2 2 0 002-2V4a2 2 0 00-2-2H7zm3 14a1 1 0 100-2 1 1 0 000 2z',
-                'edit' => 'M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z'
-            ];
-        @endphp
-        
-        @foreach($faqs as $index => $faq)
-            <div class="faq-item" data-category="{{ $faq['category'] }}">
+        @forelse($faqs as $faq)
+            @php
+                // Map category to display label and icon
+                $categoryMap = [
+                    'gettingStarted' => ['label' => 'Getting Started', 'icon' => 'M12 7a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0V8.414l-4.293 4.293a1 1 0 01-1.414 0L8 10.414l-4.293 4.293a1 1 0 01-1.414-1.414l5-5a1 1 0 011.414 0L11 10.586 14.586 7H12z'],
+                    'calculations'   => ['label' => 'Calculations',   'icon' => 'M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z'],
+                    'securityPrivacy'=> ['label' => 'Security & Privacy', 'icon' => 'M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z'],
+                    'others'         => ['label' => 'Other',          'icon' => 'M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z'],
+                ];
+                $catInfo = $categoryMap[$faq->category] ?? $categoryMap['others'];
+                $badgeClass = match($faq->category) {
+                    'gettingStarted' => 'category-getting-started',
+                    'calculations'   => 'category-calculations',
+                    'securityPrivacy'=> 'category-security-privacy',
+                    default          => 'category-other',
+                };
+            @endphp
+            <div class="faq-item" data-category="{{ $faq->category }}">
                 <div class="card">
                     <button class="faq-question" type="button">
                         <div class="faq-header">
                             <div class="faq-icon-container">
                                 <svg fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="{{ $icons[$faq['icon']] }}" clip-rule="evenodd"/>
+                                    <path fill-rule="evenodd" d="{{ $catInfo['icon'] }}" clip-rule="evenodd"/>
                                 </svg>
                             </div>
                             <div class="faq-title-section">
-                                <h3>{{ $faq['question'] }}</h3>
-                                <span class="category-badge">
-                                    {{ ucfirst(str_replace('-', ' ', $faq['category'])) }}
+                                <h3>{{ $faq->question }}</h3>
+                                <span class="category-badge {{ $badgeClass }}">
+                                    {{ $catInfo['label'] }}
                                 </span>
                             </div>
                         </div>
@@ -253,7 +180,7 @@
                     
                     <div class="faq-answer">
                         <div class="faq-answer-content">
-                            <p>{{ $faq['answer'] }}</p>
+                            <p>{{ $faq->answer }}</p>
                             <div class="faq-footer">
                                 <div class="faq-meta">
                                     <span>
@@ -269,7 +196,7 @@
                                         Verified answer
                                     </span>
                                 </div>
-                                @if($faq['category'] == 'calculations')
+                                @if($faq->category == 'calculations')
                                 <a href="{{ route('calculator.index') }}" class="calculator-link">
                                     Try in calculator
                                     <svg fill="currentColor" viewBox="0 0 20 20">
@@ -282,10 +209,18 @@
                     </div>
                 </div>
             </div>
-        @endforeach
+        @empty
+            <p class="text-center" style="padding: 3rem 0; color: var(--text-light);">No FAQs available at the moment.</p>
+        @endforelse
+
+        <!-- Pagination -->
+        <div class="pagination-wrapper" style="margin-top: 2rem;">
+            {{ $faqs->links() }}
+        </div>
     </div>
 </main>
 
+<!-- Keep all original styles (the entire <style> block) - unchanged -->
 <style>
 /* ===== DASHBOARD HEADER ===== */
 .dashboard-header {
@@ -725,6 +660,27 @@
     font-size: 0.85rem;
     font-weight: 500;
     display: inline-block;
+}
+/* Additional category badge colors */
+.category-getting-started {
+    background: linear-gradient(135deg, rgba(0, 123, 255, 0.1) 0%, rgba(0, 86, 179, 0.1) 100%);
+    color: #0069d9;
+    border: 1px solid rgba(0, 123, 255, 0.2);
+}
+.category-calculations {
+    background: linear-gradient(135deg, rgba(40, 167, 69, 0.1) 0%, rgba(33, 136, 56, 0.1) 100%);
+    color: #28a745;
+    border: 1px solid rgba(40, 167, 69, 0.2);
+}
+.category-security-privacy {
+    background: linear-gradient(135deg, rgba(255, 193, 7, 0.1) 0%, rgba(224, 168, 0, 0.1) 100%);
+    color: #ffc107;
+    border: 1px solid rgba(255, 193, 7, 0.2);
+}
+.category-other {
+    background: linear-gradient(135deg, rgba(108, 117, 125, 0.1) 0%, rgba(90, 98, 104, 0.1) 100%);
+    color: #6c757d;
+    border: 1px solid rgba(108, 117, 125, 0.2);
 }
 
 .faq-toggle-icon {

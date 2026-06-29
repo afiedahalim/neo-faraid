@@ -21,7 +21,7 @@
             --success-color: #25D366;
             --success-dark: #128C7E;
             --warning-color: #ffc107;
-            --info-color: #138496; /* Updated show button color */
+            --info-color: #138496;
             --light-bg: #f8f9fa;
             --light-border: #e9ecef;
             --text-primary: #495057;
@@ -889,7 +889,6 @@
             flex-wrap: wrap;
         }
         
-        /* SHOW BUTTON*/
         .btn-show {
             background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
             color: white;
@@ -1806,23 +1805,22 @@
                             </td>
                             <td>
                                 @php
-                                    $categoryClass = match($faq->category) {
-                                        'gettingStarted' => 'category-getting-started',
-                                        'calculations' => 'category-calculations',
-                                        'securityPrivacy' => 'category-security-privacy',
-                                        'others' => 'category-other',
-                                        default => 'category-other'
-                                    };
-                                    $categoryLabel = match($faq->category) {
+                                    $categoryLabels = [
                                         'gettingStarted' => 'Getting Started',
-                                        'calculations' => 'Calculations',
-                                        'securityPrivacy' => 'Security & Privacy',
-                                        'others' => 'Other',
-                                        default => 'Other'
+                                        'calculations'   => 'Calculations',
+                                        'securityPrivacy'=> 'Security & Privacy',
+                                        'others'         => 'Other',
+                                    ];
+                                    $label = $categoryLabels[$faq->category] ?? 'Other';
+                                    $class = match($faq->category) {
+                                        'gettingStarted' => 'category-getting-started',
+                                        'calculations'   => 'category-calculations',
+                                        'securityPrivacy'=> 'category-security-privacy',
+                                        default          => 'category-other',
                                     };
                                 @endphp
-                                <span class="category-badge {{ $categoryClass }}">
-                                    {{ $categoryLabel }}
+                                <span class="category-badge {{ $class }}">
+                                    {{ $label }}
                                 </span>
                             </td>
                             <td>{{ $faq->created_at->format('M d, Y') }}</td>
@@ -1834,7 +1832,7 @@
                                             data-question="{{ $faq->question }}"
                                             data-answer="{{ $faq->answer }}"
                                             data-category="{{ $faq->category }}"
-                                            data-category-label="{{ $categoryLabel }}"
+                                            data-category-label="{{ $label }}"
                                             data-created="{{ $faq->created_at->format('M d, Y h:i A') }}"
                                             data-updated="{{ $faq->updated_at->format('M d, Y h:i A') }}">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1969,7 +1967,6 @@
                     </svg>
                     <p id="faqErrorMessage">Error loading FAQ details. Please try again.</p>
                 </div>
-            </div>
             </div>
         </div>
     </div>
@@ -2371,8 +2368,7 @@
             constructor() {
                 // Modal elements
                 this.faqModal = document.getElementById('faqDetailsModal');
-                this.closeFaqModalBtn = document.getElementById('closeFaqModalBtn');
-                this.closeFaqModalIcon = document.getElementById('closeFaqModal');
+                this.closeFaqModalBtn = document.getElementById('closeFaqModal');
                 this.faqModalContent = document.getElementById('faqModalContent');
                 this.faqModalLoading = document.getElementById('faqModalLoading');
                 this.faqModalError = document.getElementById('faqModalError');
@@ -2414,7 +2410,6 @@
                 
                 // Close FAQ modal
                 if (this.closeFaqModalBtn) this.closeFaqModalBtn.addEventListener('click', () => this.closeFaqModal());
-                if (this.closeFaqModalIcon) this.closeFaqModalIcon.addEventListener('click', () => this.closeFaqModal());
                 
                 // Close modal on overlay click
                 this.faqModal.addEventListener('click', (e) => {

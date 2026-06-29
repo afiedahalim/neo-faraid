@@ -1752,18 +1752,10 @@
                             class="form-control @error('category') is-invalid @enderror"
                             required>
                         <option value="">Select a category</option>
-                        <option value="gettingStarted" {{ old('category', 'gettingStarted') == 'gettingStarted' ? 'selected' : '' }}>
-                            Getting Started
-                        </option>
-                        <option value="calculations" {{ old('category') == 'calculations' ? 'selected' : '' }}>
-                            Calculations
-                        </option>
-                        <option value="securityPrivacy" {{ old('category') == 'securityPrivacy' ? 'selected' : '' }}>
-                            Security & Privacy
-                        </option>
-                        <option value="others" {{ old('category') == 'others' ? 'selected' : '' }}>
-                            Other
-                        </option>
+                        <option value="gettingStarted" {{ old('category', 'gettingStarted') == 'gettingStarted' ? 'selected' : '' }}>Getting Started</option>
+                        <option value="calculations" {{ old('category') == 'calculations' ? 'selected' : '' }}>Calculations</option>
+                        <option value="securityPrivacy" {{ old('category') == 'securityPrivacy' ? 'selected' : '' }}>Security & Privacy</option>
+                        <option value="others" {{ old('category') == 'others' ? 'selected' : '' }}>Other</option>
                     </select>
                     @error('category')
                         <div class="form-text text-error">{{ $message }}</div>
@@ -1784,7 +1776,6 @@
                                     'others' => 'category-other',
                                     default => 'category-getting-started'
                                 };
-                                
                                 $categoryLabel = match($category) {
                                     'gettingStarted' => 'Getting Started',
                                     'calculations' => 'Calculations',
@@ -1806,7 +1797,7 @@
                            id="order" 
                            name="order" 
                            class="form-control @error('order') is-invalid @enderror"
-                           value="{{ old('order', 0) }}"
+                           value="{{ old('order', $nextOrder ?? 0) }}"
                            placeholder="Enter display order"
                            min="0"
                            max="999"
